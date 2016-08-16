@@ -1,0 +1,645 @@
+<?php
+require_once "header.php";
+session_start();
+if(!isset($_SESSION['myusername'])) {
+header("location:index.php");
+}
+?>
+
+<script>
+angular.module('app', [])
+	.controller('menuCtrl', function($scope, $http) {
+		var vm = this;
+		vm.test = "this is a test";
+
+		// Autofill
+		vm.autofill = function(userId) {
+			var url = "autofill.php?userId=" + userId;
+			$http.get(url)
+				.success(function (response) {
+					//alert(response);
+					if (response == 0)
+					{
+						$('#myModal').modal('show');
+					}
+					else if (response == 1)
+					{
+						// Update page.
+						location.reload();
+						//window.location.replace("menu.php");
+					}
+				})
+				.error(function(){
+					//console.log("E R R O R");
+				});
+		};
+		
+		// Cleanup Order
+		vm.cleanupOrders = function(userId) {
+			var url = "cleanup_orders.php?userId=" + userId;
+			$http.get(url)
+				.success(function (response) {
+					location.reload();
+				})
+				.error(function(){
+					//console.log("E R R O R");
+				});
+		};
+		
+		// Calculate Price Sum.
+		vm.calculatePriceSum = function(userId, date) {
+			var url = "CalculatePriceSum.php?userId=" + userId + '&date=' + date;
+			$http.get(url)
+				.success(function (response) {
+					result = JSON.stringify(response);
+					//alert(result);
+					result = JSON.parse(result);
+					
+					// Update Price Sum.
+					document.getElementById("priceSum" + date).innerHTML = result.day_sum + ' руб.';
+					
+					// Update Total Price Sum.
+					document.getElementById("totalPriceForWeek" + result.week_number).innerHTML = 'Всего: ' + result.week_sum + ' руб.';
+										
+					// Update Average Price Sum.
+					document.getElementById("averagePriceForWeek" +  + result.week_number).innerHTML = 'Средн.: ' + result.average + ' руб.';
+					
+				})
+				.error(function(){
+					//console.log("E R R O R");
+				});
+		};
+		
+		vm.addToCart = function(id, date, userId) {
+			var url = "AddToCart.php?dishId=" + id;
+			$http.post(url)
+				.success(function (response) {
+					
+					// Update Items Count.
+					document.getElementById("menuItemCount" + id).innerHTML = response;
+
+					// Update Price Sum.
+					vm.calculatePriceSum(userId, date);
+					/*
+					var container = document.getElementById("datesPaginator");
+					var content = container.innerHTML;
+					container.innerHTML= content;
+					*/
+				})
+				.error(function(){
+					//console.log("E R R O R");
+				});
+		};
+		
+		vm.RemoveFromCart = function(id, buttonColour, date, userId, filter) {
+			var url = "RemoveFromCart.php?dishId=" + id;
+			$http.post(url)
+				.success(function (itemsCount) {
+										
+					// Update Items Count.
+					document.getElementById("menuItemCount" + id).innerHTML = itemsCount;
+					
+					// Update Price Sum.
+					vm.calculatePriceSum(userId, date);
+					
+					if (itemsCount == 0 && filter)
+					{
+						location.reload();
+					}
+					
+					// Update Price Sum.
+					/*
+					var container = document.getElementById("datesPaginator");
+					var content = container.innerHTML;
+					container.innerHTML= content;
+					*/
+				})
+				.error(function(){
+					//console.log("E R R O R");
+				});
+		};	
+	});
+
+$('form').submit(function(){
+	alert($(this["options"]).val());
+    return false;
+});
+
+$(window).load(function(){
+        $('#ModalNotification').modal('show');
+    });
+
+// Tooltip: http://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_tooltip&stacked=h
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});	
+</script>
+
+<body ng-app="app" ng-controller="menuCtrl as vm">
+
+<div class="container">
+
+<!-- Display Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Автозаполнение</h4>
+      </div>
+      <div class="modal-body">
+        <p>В Вашем меню нет незаполненных дней.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- Static navbar -->
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+  <div class="navbar-header">
+	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="menu.php"><span class="glyphicon glyphicon-cutlery"></span> Сервис "Еда"</a>
+  </div>
+  <div id="navbar" class="navbar-collapse collapse">
+	<ul class="nav navbar-nav">
+		<li class="active"><a href="menu.php"><span class="glyphicon glyphicon-list-alt"></span> Меню</a></li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Настройки<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="presettings.php"><span class="glyphicon glyphicon-filter"></span> Ручной фильтр</a></li>
+				<li><a href="settings_autofill.php"><span class="glyphicon glyphicon-random"></span> Автозаполнение</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Статистика<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="stat.php"><span class="glyphicon glyphicon-stats"></span> Общая статистика</a></li>
+				<li><a href="stat_orders_history.php"><span class="glyphicon glyphicon-calendar"></span> История заказов</a></li>
+				<li><a href="stat_favorite_dishes.php"><span class="glyphicon glyphicon-heart"></span> Любимые блюда</a></li>
+			</ul>
+		</li>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Разработка<span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="whats_new.php"><span class="glyphicon glyphicon-question-sign"></span> Что нового?</a></li>
+				<li><a href="api.php"><span class="glyphicon glyphicon-transfer"></span> Открытое API</a></li>
+				<li><a href="android.php"><span class="glyphicon glyphicon-phone"></span> Android-версия</a></li>
+			</ul>
+		</li>
+<?php
+
+print $navigationBar;
+
+// 1. Display Modal if necessary.
+if (isset($_SESSION['modal_title']) and isset($_SESSION['modal_text'])) {
+	print '	<!--<br>modal_title: ' . $_SESSION['modal_title'] . '<br>modal_text:' . $_SESSION['modal_text'] . '<br>-->
+			<div id="Modal" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">' . $_SESSION['modal_title'] . '</h4>
+						</div>
+						<div class="modal-body">
+							<p>' . $_SESSION['modal_text'] . '</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				<!--alert("Вы ничего пока не заказали.");-->
+				<!--alert(' . $_SESSION['modal_text'] . ');-->
+				$("#Modal").modal("show");
+			</script>';
+unset($_SESSION['modal_title']);
+unset($_SESSION['modal_text']);			
+}
+
+// 1. Configure DB.
+require_once "config.php";
+$sql = "SET NAMES utf8";
+$conn->query($sql);
+
+// 2. Find User RoleId
+$sql = "SELECT RoleId FROM $table_users WHERE Login = '" . $_SESSION['myusername'] . "'";
+$result = $conn->query($sql);
+ while ($row = $result->fetch_assoc()) {
+	$role_id = $row["RoleId"];
+    }
+
+// 2. Display Admin Options depending on the User RoleId.
+if ($role_id == 0 or $role_id == 1) {
+	print  '<li class="dropdown">
+				<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Администрирование<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="admin_upload_excel.php"><span class="glyphicon glyphicon-cloud-upload"></span> Загрузка Меню на сервер</a></li>
+					<li><a href="admin_download_excel.php"><span class="glyphicon glyphicon-cloud-download"></span> Скачивание заполненного Меню</a></li>
+				</ul>
+			</li>';
+}
+?>
+	</ul>
+	<ul class="nav navbar-nav navbar-right">
+
+<?php
+$sql = "Select Name, Surname FROM $table_users WHERE Login = '" . $_SESSION['myusername'] . "'";
+$result = $conn->query($sql);
+$userName = NULL;
+while ($row = $result->fetch_assoc()) {
+	$userName = $row["Name"] . " " . $row["Surname"];
+}
+print  '<li class="dropdown">
+			<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> ' . $userName . ' <span class="caret"></span></a>
+			<ul class="dropdown-menu">
+				<li><a href="change_password.php"><span class="glyphicon glyphicon-cog"></span> Сменить пароль</a></li>
+				<li><a href="logout.php"><span class="glyphicon glyphicon-log-out"></span> Выйти</a></li>
+			</ul>
+		</li>';
+?>
+	  
+	</ul>
+  </div><!--/.nav-collapse -->
+</div><!--/.container-fluid -->
+</nav>
+
+<div align="center"><h1>Меню</h1></div>
+
+ <?php
+
+// 3. Get UserId.
+$sql = "SELECT Id FROM $table_users WHERE Login = '" . $_SESSION['myusername'] . "'";
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) {
+	$user_id = $row["Id"];
+}
+
+// 4. Show Modal with Notifications
+$sql = "SELECT ShowNotification FROM $table_users WHERE Id = $user_id";
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) {
+	$showNotification = $row["ShowNotification"];
+}
+if ($showNotification == 1) {
+	
+	// 4.1 Disable displaying notification
+	$sql = "UPDATE $table_users SET ShowNotification = 0 WHERE Id = $user_id";
+	$result = $conn->query($sql);
+	
+	// 4.2 Display notification
+	print '	<div class="container">
+				<div class="modal fade" id="ModalNotification" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Что нового...</h4>
+							</div>
+							<div class="modal-body">
+								<p>Ручная настройка автозаполнения:</p>
+								<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20160727_autofill.png"></a></div>
+								<br>
+								<p>Настройка автозаполнения находится в разделе: Настройки -> Автозаполнение.</p>
+								<p>Перейти к настройке <a href="settings_autofill.php" target="_blank">сейчас</a>.</p>
+								<hr>
+								<p>Список Ваших любимых блюд:</p>
+								<div align="center"><a href="stat_favorite_dishes.php" target="_blank"><img src="img\update20160727_favoriteDishes.png"></a></div>
+								<br>
+								<p>Статистика находится в разделе: Статистика -> Любимые блюда.</p>
+								<p>Перейти к статистике <a href="stat_favorite_dishes.php" target="_blank">сейчас</a>.</p>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>';
+}
+
+// 4. Get Current Page Date.
+$date = isset($_GET['date']) ? $_GET['date'] : '';
+
+// 5. Check, if Filter by Order applied.
+$filter = isset($_GET['filter']) ? $_GET['filter'] : '';
+$filter_btn_all_state = '';
+$filter_btn_filtered_state = '';
+
+// 7. Check, if Filter by Company applied.
+$company = isset($_GET['company']) ? $_GET['company'] : '';
+$filter_by_company_cimus = '';
+$filter_by_company_adam = '';
+$filter_custom = '';
+
+// 8. Set Filter button properties depending on filter
+if ($filter === '' and $company === '') {
+	$filter_btn_all_state = 'info active';
+	$filter_btn_filtered_state = 'default';
+	$filter_by_company_cimus = 'default';
+	$filter_by_company_adam = 'default';
+	$filter_custom = 'default';
+}
+else if ($filter === 'filtered') {
+	$filter_btn_all_state = 'default';
+	$filter_btn_filtered_state = 'info active';
+	$filter_by_company_cimus = 'default';
+	$filter_by_company_adam = 'default';
+	$filter_custom = 'default';
+}
+else if ($filter === 'custom') {
+	$filter_btn_all_state = 'default';
+	$filter_btn_filtered_state = 'default';
+	$filter_by_company_cimus = 'default';
+	$filter_by_company_adam = 'default';
+	$filter_custom = 'info active';
+}
+else if ($company === 'Цимус') {
+	$filter_btn_all_state = 'default';
+	$filter_btn_filtered_state = 'default';
+	$filter_by_company_cimus = 'info active';
+	$filter_by_company_adam = 'default';
+	$filter_custom = 'default';
+}
+else if ($company === 'Адам') {
+	$filter_btn_all_state = 'default';
+	$filter_btn_filtered_state = 'default';
+	$filter_by_company_cimus = 'default';
+	$filter_by_company_adam = 'info active';
+	$filter_custom = 'default';
+}
+
+# Disable Send button for Test User
+$send_button_type = "";
+if ($role_id == 3) {
+	$send_button_type = ' disabled="disabled"';
+}
+
+// 9. Create Buttons Panel.
+print  '<div class="container-fluid">
+			<div class="panel-footer row">
+				<div class="col-sm-7 text-left">
+					<form action="?filter=&date=&company=" method="get">
+						<div class="btn-group">
+							<button type="submit" name="filter" value="" class="btn btn-' . $filter_btn_all_state . '"><span class="glyphicon glyphicon-filter"></span> Без фильтров</button>
+							<button type="submit" name="company" value="Цимус" class="btn btn-' . $filter_by_company_cimus . '"><span class="glyphicon glyphicon-filter"></span> Цимус</button>
+							<button type="submit" name="company" value="Адам" class="btn btn-' . $filter_by_company_adam . '"><span class="glyphicon glyphicon-filter"></span> Адам</button>
+							<button type="submit" name="filter" value="filtered" class="btn btn-' . $filter_btn_filtered_state . '"><span class="glyphicon glyphicon-filter"></span> Мой заказ</button>
+							<button type="submit" name="filter" value="custom" class="btn btn-' . $filter_custom . '"><span class="glyphicon glyphicon-filter"></span> Ручной фильтр</button>
+							<input type="hidden" value="' . $date . '" name="date">
+						</div>
+					</form>
+				</div>
+				<div class="col-sm-2 text-center">
+					<a href="#" data-toggle="tooltip" title="Автозаполнение"><button ng-click="vm.autofill(' . $user_id . ')" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
+					<a href="#" data-toggle="tooltip" title="Очистить заказ"><button ng-click="vm.cleanupOrders(' . $user_id . ')" type="submit" class="btn btn btn-danger"><span class="glyphicon glyphicon-trash"></span> </button></a>
+				</div>
+				<div class="col-sm-2 text-right">					
+					<form action="SendEmail.php?date=&userId=" method="get">
+						<button type="submit" name="date" value="' . $date . '" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
+						<input type="hidden" value="' . $user_id . '" name="userId">
+					</form>
+				</div>
+			</div>
+		</div>';
+
+		
+
+$food_table_rows_colours = array('success', 'info', 'warning'); 
+
+
+$sql = "SELECT DISTINCT Date FROM $table_food WHERE DATE >= CURDATE() ORDER BY Date ASC";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0)
+{
+	$paging_date = isset($_GET['date']) ? $_GET['date'] : '';
+	$_SESSION['paging_date'] = $paging_date;
+
+	// 8. Create Pagination.
+	$total_price = 0;
+	$average = 0;
+	$days_count = 0;
+	$week_number = 0;
+	$last_day = '';
+	
+	print '<form action="" method="post">
+			<div class="container" align="center">
+			  <ul class="pagination pagination-sm">';
+	
+	$daysofweek = array();
+	
+    while($row = $result->fetch_assoc()) {
+		
+		// 8.1. Get Price Sum for Pagination.
+		$sum = 0;
+		$sql_price_sum = "SELECT SUM($table_food.Price * $table_orders.Count) AS TotalPrice FROM $table_food LEFT OUTER JOIN $table_orders ON $table_food.Id=$table_orders.MenuItemId WHERE $table_food.Date = '" . $row["Date"] . "' AND $table_orders.UserId = $user_id";
+		$result_price_sum = $conn->query($sql_price_sum);
+		while($row_price_sum = $result_price_sum->fetch_assoc()) {
+			$sum = $row_price_sum["TotalPrice"];
+			}
+		if ($sum == Null)
+		{
+			$sum = 0;
+		}
+		
+		$dayofweek = date('w', strtotime($row["Date"]));
+		if($dayofweek == 1) {
+			$dayofweek = 'Понедельник';
+		} elseif($dayofweek == 2) {
+			$dayofweek = 'Вторник';
+		} elseif($dayofweek == 3) {
+			$dayofweek = 'Среда';
+		} elseif($dayofweek == 4) {
+			$dayofweek = 'Четверг';
+		} elseif($dayofweek == 5) {
+			$dayofweek = 'Пятница';
+		} elseif($dayofweek == 6) {
+			$dayofweek = 'Суббота';
+		} elseif($dayofweek == 7) {
+			$dayofweek = 'Воскресенье';
+		} else {
+			$dayofweek = '';
+		};
+		
+		// 8.2. Add Pagination Splitter if new week is started.
+		$dayofweek_dgt = date('w', strtotime($row["Date"]));
+		foreach ($daysofweek as &$day_nmbr) {
+			if ($dayofweek_dgt == $day_nmbr or $dayofweek_dgt <= $day_nmbr)
+			{
+				// 8.3 Add Total Price Pagination.
+				$average = intval($total_price / $days_count);
+				print '<li class="disabled"><a href="#"><div id="totalPriceForWeek' . $week_number . '">Всего: ' . $total_price . ' руб.</div><br><div id="averagePriceForWeek' . $week_number . '">Средн.: ' . $average .  ' руб.</div></a></li>';
+				$total_price = 0;
+				$days_count = 0;
+				$week_number++;
+				
+				// 8.4. Add Pagination Splitter if new week is started.
+				print '</ul>
+				   <ul class="pagination pagination-sm">';
+				 
+				// Cleanup the array.
+				$daysofweek = array();
+				break;
+			}
+		}
+		array_push($daysofweek, $dayofweek_dgt);
+				
+		// Show first table when open Menu page.
+		if ($paging_date === '')
+		{
+			$paging_date = $row["Date"];
+		}
+
+		// Make selected page active.
+		$page_active = '';
+		if ($row["Date"] === $paging_date)
+		{
+			$page_active = ' class="active"';
+		}
+		
+		print '<li' . $page_active . '><a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '">' . $dayofweek . "<br>" . $row["Date"] . '<div id="priceSum' . $row["Date"] . '">' . $sum .  ' руб.</div></a></li>';
+		
+		// Calculate total price.
+		$total_price = $total_price + $sum;
+		
+		// Days Count.
+		$days_count++;
+		$last_day = $row["Date"];
+	}
+	
+	// 8.5 Add Total Price Pagination.
+	$average = intval($total_price / $days_count);
+	print '<li class="disabled"><a href="#"><div id="totalPriceForWeek' . $week_number . '">Всего: ' . $total_price . ' руб.</div><br><div id="averagePriceForWeek' . $week_number . '">Средн.: ' . $average .  ' руб.</div></a></li>';
+	
+	print '	  </ul>
+			</div>
+			</form>';
+	
+	// 9.1. Create Table with Dishes.
+	print '<table class="table table-hover"
+					<thead>
+						<tr>
+							<th width="100"><div class="text-center">Категория</div></th>
+							<th width="500"><div class="text-center">Блюдо</div></th>
+							<th width="50"><div class="text-center">Вес (гр.)</div></th>
+							<th width="50"><div class="text-center">Цена (р.)</div></th>
+							<th width="100"><div class="text-center">Поставщик</div></th>
+							<th width="80"><div class="text-center">Добавить / удалить</div></th>
+						</tr>
+					</thead>
+					<tbody><tbody></table>';
+	
+	// 9.2 Add Scrollbar (in case of displaying full menu).
+	if ($filter === '' or $filter === 'custom') {
+		print '<div class="scrollit">';
+	}
+	
+	print '<table class="table table-hover"
+					<thead></thead>
+					<tbody>';
+	
+	// 9.3. Query DB for Dishes depending on Filter.
+	$sql1 = '';
+	if ($filter === '') {
+		if ($company === '') {
+			$sql1 = "SELECT * FROM $table_food WHERE Date = '$paging_date' ORDER BY Company DESC, Id ASC";
+		}
+		else {
+			$sql1 = "SELECT * FROM $table_food WHERE Date = '$paging_date' AND Company = \"" . $company . "\" ORDER BY Id ASC";
+		}
+	}
+	else if ($filter === 'filtered') {
+		$sql1 = "SELECT * FROM $table_food
+			LEFT OUTER JOIN $table_orders ON $table_food.Id=$table_orders.MenuItemId
+			WHERE $table_food.Date = '$paging_date' AND $table_orders.UserId = $user_id
+			ORDER BY $table_food.Id";
+	}
+	else if ($filter === 'custom') {
+		$sql2 = "SELECT FoodType, Company, Priority FROM $table_filters WHERE UserId = $user_id AND Enabled = 1 ORDER BY Priority ASC";
+		$result2 = $conn->query($sql2);
+		$sql_where = '';
+		$sql_case = 'ORDER BY CASE ';
+		while($row2 = $result2->fetch_assoc()) {
+			$sql_where .= '(Type = "' . $row2["FoodType"] . '" AND Company = "' . $row2["Company"] . '") OR ';
+			$sql_case .=  'WHEN TYPE = "' . $row2["FoodType"] . '" THEN ' . $row2["Priority"] . ' ';
+		}
+		
+		if ($sql_where === '') {
+			$sql1 = "";
+		}
+		else {
+			$sql_where = substr($sql_where, 0, -3);
+			$sql1 = "SELECT * FROM food WHERE Date = '$paging_date' AND ($sql_where) $sql_case END ASC";
+		}
+	}
+
+	if ($sql1 === "") {
+	}
+	else {
+		$result1 = $conn->query($sql1);
+		$i = 0;
+		$previous_food_type = '';
+		while($row1 = $result1->fetch_assoc()) {
+			
+			if ($previous_food_type === '' or $previous_food_type === $row1["Type"])
+				{
+					
+				}
+				else
+				{
+					$i++;
+				}
+				if ($i >= count($food_table_rows_colours))
+				{
+					$i = 0;
+				}
+				
+				// 8.6 Get the Items Count.
+				$itemsCount = 0;
+				$sql2 = "SELECT * FROM $table_orders WHERE UserId = $user_id AND MenuItemId = " . $row1["Id"];
+				$result2 = $conn->query($sql2);
+				while($row2 = $result2->fetch_assoc()) {
+					$itemsCount = $row2["Count"];
+				}
+				
+				print '<tr class="' . $food_table_rows_colours[$i] . '">
+						<td width="100" align="center">' . $row1["Type"] . '</td>
+						<td width="500">' . $row1["Name"] . '<br>' . $row1["Contain"] . '</td>
+						<td width="50" align="center">' . $row1["Weight"] . '</td>
+						<td width="50" align="center">' . $row1["Price"] . '</td>
+						<td width="100" align="center">' . $row1["Company"] . '</td>
+						<td width="80" align="center"><button ng-click="vm.addToCart(' . $row1["Id"] . ', \'' . $paging_date . '\', ' . $user_id . ')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-plus"></span></button> <button id="minus' . $row1["Id"] .  '" ng-click="vm.RemoveFromCart(' . $row1["Id"] .  ', ' . $food_table_rows_colours[$i] . ', \'' . $paging_date . '\', ' . $user_id . ', \'' . $filter . '\')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-minus"></span></button><p id="menuItemCount' . $row1["Id"] .  '" class="text-muted">' . $itemsCount .  '</p></td>
+					  </tr>';
+		
+				$previous_food_type = $row1["Type"];
+		}
+	}	
+	
+	print '</tbody></table></div>';
+	
+	// 9.2 Add Scrollbar (in case of displaying full menu).
+	if ($filter === '' or $filter === 'custom') {
+		print '</div>';
+	}
+	print '</div></div>';
+}
+else
+{
+	print '<br><br>Меню пока отсутствует.';
+}
+
+require_once "footer.php";
+ ?>
