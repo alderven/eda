@@ -199,6 +199,7 @@ $(document).ready(function(){
 		</li>
 <?php
 
+// 1. Display Navigation Bar
 print $navigationBar;
 
 // 1. Display Modal if necessary.
