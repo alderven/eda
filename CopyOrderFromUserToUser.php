@@ -3,18 +3,9 @@ session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
-
-//$order = array();
-
-// 1. Get User Id.
-$user_id = isset($_GET['userId']) ? $_GET['userId'] : '';
-
-// 2. Configure DB connection.
 require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
 
-// 3. Get all days starting from tomorrow.
+# 1. Get all days starting from tomorrow.
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE Date > CURDATE()";
 $result = $conn->query($sql);
 $all_dates = array();
@@ -22,7 +13,7 @@ while($row = $result->fetch_assoc()) {
 	array_push($all_dates, $row["Date"]);
 }
 
-// 4. Filter dates which are empty for current user.
+# 2. Filter dates which are empty for current user.
 $empty_dates = array();
 foreach ($all_dates as &$date) {
 	$sql = "SELECT MenuItemId FROM $table_orders
@@ -39,7 +30,7 @@ foreach ($all_dates as &$date) {
 		array_push($empty_dates, $date);
 	}
 }
-// 5. If no empty dates, then show modal popup.
+# 3. If no empty dates, then show modal popup.
 if (count($empty_dates) == 0)
 {
 	// Empty days are absent. Show modal alert.
@@ -49,7 +40,7 @@ if (count($empty_dates) == 0)
 }
 else
 {	
-	// 6. Select random dishes for the empty dates for current user.
+	# 4. Select random dishes for the empty dates for current user.
 	$my_order = array();
 	foreach ($empty_dates as &$date) {
 						

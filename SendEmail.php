@@ -94,20 +94,12 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	$body = $mime->get($mime_params);
 	$hdrs = $mime->headers($hdrs);
 
-	$smtp = Mail::factory('smtp', array(
-		/*
-		'host' => 'ssl://smtp.gmail.com',
-		'port' => '465',
-		'auth' => true,
-		'username' => 'eda.adalisk@gmail.com',
-		'password' => 'adalisk.eda'
-		*/
-		
+	$smtp = Mail::factory('smtp', array(		
 		'host' => 'ssl://smtp.yandex.ru',
 		'port' => '465',
 		'auth' => true,
-		'username' => $GLOBALS['send_email_from'],
-		'password' => $GLOBALS['send_email_from_pass']
+		'username' => $send_email_from,
+		'password' => $send_email_from_pass
 
 	));
 	

@@ -1,4 +1,6 @@
 <?php
+require_once "config.php";
+
 session_start();
 
 // Transliterate (for attachment file name)
@@ -40,22 +42,6 @@ $date = isset($_GET['date']) ? $_GET['date'] : '';
 if ($date === '')
 {
 	$date = date("Y-m-d");
-}
-
-// 2. Get UserId.
-$user_id = isset($_GET['userId']) ? $_GET['userId'] : '';
-
-// 3. Set correct DB encoding.
-require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
-
-// 4. Get User Surname.
-$sql = "SELECT Surname FROM $table_users WHERE Id = $user_id";
-$result = $conn->query($sql);
-$surname = '';
- while ($row = $result->fetch_assoc()) {
-	$surname = $row["Surname"];
 }
 
 // 5. Get ExcelId by Date.

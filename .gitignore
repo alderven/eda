@@ -1,0 +1,6 @@
+*.xls
+*.tmp
+upload/*
+*.js
+*.log
+*.css

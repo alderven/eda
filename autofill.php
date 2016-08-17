@@ -3,6 +3,7 @@ session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
+require_once "config.php";
 
 // Define function for collecting Favorite Dishes
 function collectFavoriteDishes($table_food, $table_orders, $user_id, $conn, $my_order, $date, $sqlCompany, $sqlDishType)
@@ -47,15 +48,6 @@ function collectFavoriteDishes($table_food, $table_orders, $user_id, $conn, $my_
 	
 	return $my_order;
 }
-
-
-// 1. Get User Id
-$user_id = isset($_GET['userId']) ? $_GET['userId'] : '';
-
-// 2. Configure DB connection
-require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
 
 // 3. Get all days starting from tomorrow.
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE Date > CURDATE()";

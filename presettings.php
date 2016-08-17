@@ -4,18 +4,7 @@ session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
-
-// 1. Configure DB connection
 require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
-
-// 2. Get UserId
-$sql = "SELECT Id FROM $table_users WHERE Login = '" . $_SESSION['myusername'] . "'";
-	$result = $conn->query($sql);
-	 while ($row = $result->fetch_assoc()) {
-        $user_id = $row["Id"];
-    }
 
 // 3. Get Custom Filter
 $sql = "SELECT * FROM $table_filters WHERE UserId = $user_id";
