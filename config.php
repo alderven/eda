@@ -13,13 +13,13 @@ $table_users = 'users';
 $table_food = 'food';
 $table_orders = 'orders';
 $table_filters = 'filters';
+$table_config = 'config';
 
 # 2. Define web site URL
 $site_url = 'http://eda.adalisk.com/';
 
-# 3. Define Email parameters
+# 3. Define Email
 $send_email_from = 'eda@adalisk.com';
-$send_email_from_pass = 'EdaAdalisk';
 
 # 4. Define Autofill parameters
 $autofillSettings = array('AutofillSetting_OrderInCimus', 'AutofillSetting_OrderInAdam', 'AutofillSetting_OrderFirstDishes', 'AutofillSetting_OrderSecondDishes', 'AutofillSetting_OrderSalads', 'AutofillSetting_OrderDesserts', 'AutofillSetting_Rich', 'AutofillSetting_FavoriteDishes');
@@ -40,7 +40,17 @@ $sql = "SET NAMES utf8";
 $conn->query($sql);
 
 ###################################################################################################
-# III. Generate Navigation Bar
+# III. Get Email Password
+###################################################################################################
+
+$sql = "SELECT ParameterValue FROM $table_config WHERE ParameterName = 'EmailPassword'";
+$result = $conn->query($sql);
+ while ($row = $result->fetch_assoc()) {
+	$send_email_from_pass = $row["ParameterValue"];
+ }
+ 
+###################################################################################################
+# IV. Generate Navigation Bar
 ###################################################################################################
 
 # 1. Generate Navigation Bar only if User Session defined
@@ -54,6 +64,7 @@ if(isset($_SESSION['myusername'])) {
 		$role_id = $row["RoleId"];
 		$name = $row["Name"];
 		$surname = $row["Surname"];
+		$email = $row["Login"];
 	}
 
 	# 3. Initialize Admin Navigation Bar depending on the User RoleId

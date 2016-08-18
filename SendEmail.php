@@ -2,15 +2,11 @@
 session_start();
 require_once "config.php";
 
-##############################################################################################
-# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S EMAILS WHEN DEBUG
-##############################################################################################
-
 include 'Mail.php';
 include 'Mail/mime.php';
 
-// 1. Get Date.
-$date = isset($_GET['date']) ? $_GET['date'] : '';
+// 1. Get Date
+$date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
 
 // Display popup if email successfully sent.
 function popup_success($email, $date) {
@@ -50,14 +46,18 @@ function rus2translit($string) {
 }
 
 // Send Email
-function send_email($company, $file, $name, $surname, $dates, $user_email, $week_number)
+function send_email($company, $file, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass)
 {
-	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-	//$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
+	##############################################################################################
+	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
+	##############################################################################################
+	
+	//$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
-		$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-		//$mail_to = 'aananyev@adalisk.com'; // Debug
+		//$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+		$mail_to = 'aananyev@adalisk.com'; // Debug
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
@@ -73,7 +73,7 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	$html = "<html><head><meta charset=\"UTF-8\"></head><body>Обед заказал(а): <b>" . $name . " " . $surname . "</b>.<br><br>Спасибо!<br><br><h6>Не отвечайте на это письмо! Оно было отправлено роботом. По всем вопросам пишите на aananyev@adalisk.com<h6></body></html>";
 	$crlf = "\n";
 	$hdrs = array(
-				  'From'    => $GLOBALS['send_email_from'],
+				  'From'    => $send_email_from,
 				  'To'    => $mail_to,
 				  'Subject' => $subject,
 				  'Content-Type'  => 'text/html; charset=UTF-8'
@@ -108,48 +108,20 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 
 try_again:
 
-// 1. Get Date.
-$date = isset($_GET['date']) ? $_GET['date'] : '';
-
-// 2. Get the Current date if date is empty.
-if ($date === '')
-{
-	$date = date("Y-m-d");
-}
-
-// 3. Get UserId.
-$user_id = isset($_GET['userId']) ? $_GET['userId'] : '';
-
-// 4. Set correct DB encoding.
-require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
-
-// 5. Get User Surname.
-$sql = "SELECT Name, Surname FROM $table_users WHERE Id = $user_id";
-$result = $conn->query($sql);
-$name = '';
-$surname = '';
- while ($row = $result->fetch_assoc()) {
-	$name = $row["Name"];
-	$surname = $row["Surname"];
-}
-
-// 5. Get User Email.
-$sql = "SELECT Login FROM $table_users WHERE Id = $user_id";
-$result = $conn->query($sql);
-$email = '';
- while ($row = $result->fetch_assoc()) {
-	$email = $row["Login"];
-}
+// 1. Get Date
+$date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
+//print '$date: «' . $date . '» Current date: «' . date("Y-m-d") . '». $_GET[\'date\']: «' . $_GET['date'] . '»';
 
 // 6. Get ExcelId by Date (Date is equal to date of opened UI tab by User)
 $sql = "SELECT DISTINCT ExcelId FROM $table_food WHERE Date = '$date'";
+print $sql;
 $result = $conn->query($sql);
 $excel_id = null;
  while ($row = $result->fetch_assoc()) {
 	$excel_id = $row["ExcelId"];
 }
+print ' Excel ID:' . $excel_id;
+
 // 7. Get all Dates by ExcelId
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE ExcelId = '$excel_id'";
 $result = $conn->query($sql);
@@ -245,7 +217,7 @@ else {
 				
 			// 17. Send Email
 			if (file_exists($newfile)) {
-				send_email($company, $newfile, $name, $surname, $dates, $email, $week_number);
+				send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass);
 			
 				// 18. Display success popup
 				popup_success($email, $date);
