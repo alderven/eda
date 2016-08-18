@@ -4,7 +4,7 @@ require_once "header.php";
 require_once "config.php";
 
 // Define $myusername and $mypassword 
-$myusername=$_SESSION['myusername'];
+$myusername=strtolower($_SESSION['myusername']);
 $currentPassword=$_POST['currentPassword'];
 $newPassword=$_POST['newPassword'];
 $newPasswordRepeat=$_POST['newPasswordRepeat'];

@@ -4,10 +4,10 @@ require_once "header.php";
 require_once "config.php";
 
 // Define $myusername and $mypassword 
-$myusername=$_POST['myusername']; 
+$myusername=strtolower($_POST['myusername']); 
 $mypassword=$_POST['mypassword']; 
 
-// To protect MySQL injection (more detail about MySQL injection)
+// To protect MySQL injection
 $myusername = stripslashes($myusername);
 $mypassword = stripslashes($mypassword);
 $myusername = mysql_real_escape_string($myusername);

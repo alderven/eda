@@ -1,12 +1,12 @@
 <?php
 session_start();
 
-// Define $myusername
-$myusername=$_POST['myusername'];
+# 1. Start User session
+$myusername=strtolower($_POST['myusername']);
+$_SESSION['myusername'] = $myusername;
 
+# 2. Include config
 require_once "config.php";
-$sql = "SET NAMES utf8";
-$conn->query($sql);
 
 $sql="SELECT Name, Id FROM $table_users WHERE login='$myusername'";
 $result = $conn->query($sql);
