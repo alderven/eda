@@ -25,6 +25,8 @@ print $navigationBar;
 <p>Страница находится в разделе: «Разработка» → «Что нового?»</p>
 <hr>
 <p>Исходный код проекта опубликован в открытом доступе: <a href="https://github.com/alderven/eda" target="_blank">https://github.com/alderven/eda</a></p>
+<p>Сюда можно заносить баги (требуется GitHub аккаунт): <a href="https://github.com/alderven/eda/issues" target="_blank">https://github.com/alderven/eda/issues</a></p>
+
 <p>Исправлен баг: <a href="https://github.com/alderven/eda/issues/1" target="_blank">Unable to login if Login in uppercase</a></p>
 <hr>
 

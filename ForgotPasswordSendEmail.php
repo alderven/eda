@@ -31,7 +31,7 @@ if($count == 1){
 	$to = '<' . $myusername . '>';
 	$subject = 'Сервис «Еда»: Восстановление пароля';
 	$subject = "=?UTF-8?B?" . base64_encode(html_entity_decode($subject, ENT_COMPAT, 'UTF-8')) . "?=";
-	$body = '<html><head><meta charset=\"UTF-8\"></head><body>' . $name . ',<br><br>Для восстановления пароля перейдите, пожалуйста, по ссылке:<a href=' . $restoreLink . '> ' . $restoreLink . '</a><br><br><h6>Не отвечайте на это письмо! Оно было отправлено роботом. По всем вопросам пишите на aananyev@adalisk.com<h6></body></html>';
+	$body = '<html><head><meta charset=\"UTF-8\"></head><body>' . $name . ',<br><br>Для восстановления пароля перейдите, пожалуйста, по ссылке: <a href=' . $restoreLink . '> ' . $restoreLink . '</a><br><br><h6>Не отвечайте на это письмо! Оно было отправлено роботом. По всем вопросам пишите на aananyev@adalisk.com<h6></body></html>';
 
 	$headers = array(
 		'From' => $from,
