@@ -214,16 +214,11 @@ if ($showNotification == 1) {
 								<h4 class="modal-title">Что нового...</h4>
 							</div>
 							<div class="modal-body">
-								<!-- Message Start -->
-								<p>В разделе <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Очистить заказ», поменялся интерфейс кнопки «Автозаполнение»:</p>
-								<div align="center"><a href="menu.php" target="_blank"><img src="img\update20160820_cleanupOrder.png"></a></div>
+								<!-- MESSAGE START -->
+								Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
+								<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20160920_autofill.png"></a></div>
 								<hr>
-								<p>Добавлена страница с <a href="whats_new.php" target="_blank">историей разработки</a>.</p>
-								<p>Страница находится в разделе: «Разработка» → «Что нового?»</p>
-								<hr>
-								<p>Исходный код проекта опубликован в открытом доступе: <a href="https://github.com/alderven/eda" target="_blank">https://github.com/alderven/eda</a></p>
-								<p>Сюда можно заносить баги (требуется GitHub аккаунт): <a href="https://github.com/alderven/eda/issues" target="_blank">https://github.com/alderven/eda/issues</a></p>
-								<!-- Message End -->
+								<!-- MESSAGE END -->
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>

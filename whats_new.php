@@ -16,6 +16,12 @@ print $navigationBar;
 <!-- Page title -->
 <div align="center"><h1>Что нового?</h1></div>
 
+<!-- Update 20.09.2016-->
+<div><h3><table class="table"><tr class="info"><td align="center">Версия от 20.09.2016</td></tr></tbody></table></h3></div>
+Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
+<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20160920_autofill.png"></a></div>
+<hr>
+
 <!-- Update 20.08.2016-->
 <div><h3><table class="table"><tr class="info"><td align="center">Версия от 20.08.2016</td></tr></tbody></table></h3></div>
 <p>В разделе <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Очистить заказ», поменялся интерфейс кнопки «Автозаполнение»:</p>
@@ -26,7 +32,6 @@ print $navigationBar;
 <hr>
 <p>Исходный код проекта опубликован в открытом доступе: <a href="https://github.com/alderven/eda" target="_blank">https://github.com/alderven/eda</a></p>
 <p>Сюда можно заносить баги (требуется GitHub аккаунт): <a href="https://github.com/alderven/eda/issues" target="_blank">https://github.com/alderven/eda/issues</a></p>
-
 <p>Исправлен баг: <a href="https://github.com/alderven/eda/issues/1" target="_blank">Unable to login if Login in uppercase</a></p>
 <hr>
 

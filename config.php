@@ -21,9 +21,6 @@ $site_url = 'http://eda.adalisk.com/';
 # 3. Define Email
 $send_email_from = 'eda@adalisk.com';
 
-# 4. Define Autofill parameters
-$autofillSettings = array('AutofillSetting_OrderInCimus', 'AutofillSetting_OrderInAdam', 'AutofillSetting_OrderFirstDishes', 'AutofillSetting_OrderSecondDishes', 'AutofillSetting_OrderSalads', 'AutofillSetting_OrderDesserts', 'AutofillSetting_Rich', 'AutofillSetting_FavoriteDishes');
-
 ###################################################################################################
 # II. Connect to DB
 ###################################################################################################

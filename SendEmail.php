@@ -52,12 +52,12 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-	//$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
+	//$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
-		$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-		//$mail_to = 'aananyev@adalisk.com'; // Debug
+		//$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+		$mail_to = 'aananyev@adalisk.com'; // Debug
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
