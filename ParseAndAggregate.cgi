@@ -88,35 +88,26 @@ class Parse:
         # 1. Set default WeekNumber.
         dish.week_number = 0
 
-        # 2. Read all Sheets.
+        # 2. Read all Sheets
         i = 1
         while i < excel._all_sheets_count - 1:
+
             sheet = excel.sheet_by_index(i)
-            dish.sheet_index = i
-            j = 0  # row
 
-            # 3. Read the Sheet date
-            date_parsed = False
-            year = None
-            month = None
-            day = None
+            if sheet.name.lower().strip() in ['ïí', 'âò', 'ñð', '÷ò', 'ïò', 'ñá', 'âñ']:
 
-            # Date type '23.11.2015' and date located in 'A2' cell
-            try:
-                j = 1  # Cell 'A2'
-                date_tmp = sheet.cell_value(rowx=j, colx=0)
-                date_tmp_splt = date_tmp.split('.')
-                year = date_tmp_splt[2]
-                month = date_tmp_splt[1]
-                day = date_tmp_splt[0]
-                date_parsed = True
-            except:
-                print('Date Parsing. Attempt 1: Failed.')
+                dish.sheet_index = i
+                j = 0  # row
 
-            # Date type is '25.07.2016' and date located in 'A3' cell
-            if date_parsed is False:
+                # 3. Read the Sheet date
+                date_parsed = False
+                year = None
+                month = None
+                day = None
+
+                # Date type '23.11.2015' and date located in 'A2' cell
                 try:
-                    j = 2  # Cell 'A3'
+                    j = 1  # Cell 'A2'
                     date_tmp = sheet.cell_value(rowx=j, colx=0)
                     date_tmp_splt = date_tmp.split('.')
                     year = date_tmp_splt[2]
@@ -124,84 +115,97 @@ class Parse:
                     day = date_tmp_splt[0]
                     date_parsed = True
                 except:
-                    print('Date Parsing. Attempt 2: Failed.')
+                    print('Date Parsing. Attempt 1: Failed.')
 
-            # Date type '24 íîÿáðÿ 2015 ã.' and located in 'A3' cell
-            if date_parsed is False:
-                try:
-                    j = 2  # Cell 'A3'
-                    date_tmp = xlrd.xldate_as_tuple(sheet.cell_value(rowx=j, colx=0), 0)
-                    year = date_tmp[0]
-                    month = date_tmp[1]
-                    day = date_tmp[2]
-                    date_parsed = True
-                except:
-                    print('Date Parsing. Attempt 3: Failed.')
+                # Date type is '25.07.2016' and date located in 'A3' cell
+                if date_parsed is False:
+                    try:
+                        j = 2  # Cell 'A3'
+                        date_tmp = sheet.cell_value(rowx=j, colx=0)
+                        date_tmp_splt = date_tmp.split('.')
+                        year = date_tmp_splt[2]
+                        month = date_tmp_splt[1]
+                        day = date_tmp_splt[0]
+                        date_parsed = True
+                    except:
+                        print('Date Parsing. Attempt 2: Failed.')
 
-            # Date type ... and located in 'A2' cell
-            if date_parsed is False:
-                try:
-                    j = 1  # Cell 'A2'
-                    date_tmp = xlrd.xldate_as_tuple(sheet.cell_value(rowx=j, colx=0), 0)
-                    year = date_tmp[0]
-                    month = date_tmp[1]
-                    day = date_tmp[2]
-                    date_parsed = True
-                except:
-                    print('Date Parsing. Attempt 4: Failed.')
+                # Date type '24 íîÿáðÿ 2015 ã.' and located in 'A3' cell
+                if date_parsed is False:
+                    try:
+                        j = 2  # Cell 'A3'
+                        date_tmp = xlrd.xldate_as_tuple(sheet.cell_value(rowx=j, colx=0), 0)
+                        year = date_tmp[0]
+                        month = date_tmp[1]
+                        day = date_tmp[2]
+                        date_parsed = True
+                    except:
+                        print('Date Parsing. Attempt 3: Failed.')
 
-            # Date type is string
-            if date_parsed is False:
-                try:
-                    date_tmp = sheet.cell_value(rowx=j, colx=0)  # Parse Date as string
-                    date_tmp = date_tmp.split(' ')
-                    year = date_tmp[2]
-                    day = date_tmp[0]
-                    month = 0
+                # Date type ... and located in 'A2' cell
+                if date_parsed is False:
+                    try:
+                        j = 1  # Cell 'A2'
+                        date_tmp = xlrd.xldate_as_tuple(sheet.cell_value(rowx=j, colx=0), 0)
+                        year = date_tmp[0]
+                        month = date_tmp[1]
+                        day = date_tmp[2]
+                        date_parsed = True
+                    except:
+                        print('Date Parsing. Attempt 4: Failed.')
 
-                    # Find month
-                    k = 0
-                    while k < len(months):
-                        if months[k] in date_tmp[1]:
-                            month = k + 1
-                        k += 1
-                except:
-                    print('Date Parsing. Attempt 5: Failed.')
+                # Date type is string
+                if date_parsed is False:
+                    try:
+                        date_tmp = sheet.cell_value(rowx=j, colx=0)  # Parse Date as string
+                        date_tmp = date_tmp.split(' ')
+                        year = date_tmp[2]
+                        day = date_tmp[0]
+                        month = 0
 
-            dish.date = str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2)
+                        # Find month
+                        k = 0
+                        while k < len(months):
+                            if months[k] in date_tmp[1]:
+                                month = k + 1
+                            k += 1
+                    except:
+                        print('Date Parsing. Attempt 5: Failed.')
 
-            # 4. Move to next x lines for reading Menu
-            j += 1
-            title = sheet.cell_value(rowx=j, colx=0)
-            if 'íàèìåíîâàíèå' in title.lower():
+                dish.date = str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2)
+
+                # 4. Move to next x lines for reading Menu
                 j += 1
-            '''
-            # 5. Add offset 1 line (row) if 'Íàèìåíîâàíèå' in 'A4' (see ÌÅÍÞ ÃÀÌÌÀ_4 ñ 25-29 èþëÿ.xls)
-            tmp = sheet.cell_value(rowx=j+1, colx=0)
-            if 'íàèìåíîâàíèå' in tmp.lower():
-                j += 1
-            '''
-            # 6. Read menu for specified Sheet.
-            dish_type_previous = ''
-            while j < sheet.nrows - 2:  # offset 2 rows from the bottom of the sheet
-                price_tmp = sheet.cell_value(rowx=j, colx=1)
-                if price_tmp == '':
-                    dish.type = sheet.cell_value(rowx=j, colx=0)
-                    dish_type_previous = dish.type
+                title = sheet.cell_value(rowx=j, colx=0)
+                if 'íàèìåíîâàíèå' in title.lower():
                     j += 1
-                else:
-                    dish.type = dish_type_previous
+                '''
+                # 5. Add offset 1 line (row) if 'Íàèìåíîâàíèå' in 'A4' (see ÌÅÍÞ ÃÀÌÌÀ_4 ñ 25-29 èþëÿ.xls)
+                tmp = sheet.cell_value(rowx=j+1, colx=0)
+                if 'íàèìåíîâàíèå' in tmp.lower():
+                    j += 1
+                '''
+                # 6. Read menu for specified Sheet.
+                dish_type_previous = ''
+                while j < sheet.nrows - 2:  # offset 2 rows from the bottom of the sheet
+                    price_tmp = sheet.cell_value(rowx=j, colx=1)
+                    if price_tmp == '':
+                        dish.type = sheet.cell_value(rowx=j, colx=0)
+                        dish_type_previous = dish.type
+                        j += 1
+                    else:
+                        dish.type = dish_type_previous
 
-                dish.name = sheet.cell_value(rowx=j, colx=0)
-                dish.price = sheet.cell_value(rowx=j, colx=1)
-                dish.contain = sheet.cell_value(rowx=j, colx=2)
-                dish.column = 4
-                dish.row = j
+                    dish.name = sheet.cell_value(rowx=j, colx=0)
+                    dish.price = sheet.cell_value(rowx=j, colx=1)
+                    dish.contain = sheet.cell_value(rowx=j, colx=2)
+                    dish.column = 4
+                    dish.row = j
 
-                # Check, whether Excel row is not empty.
-                if dish.name:
-                    DB.write(dish)
-                j += 1
+                    # Check, whether Excel row is not empty.
+                    if dish.name:
+                        DB.write(dish)
+                    j += 1
             i += 1
 
     @staticmethod
@@ -507,9 +511,9 @@ conn = pymysql.connect(host='localhost', user='root', passwd='12345', db='eda', 
 cur = conn.cursor()
 
 # Examples:
-# parse 'ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls'
-# aggregate 'ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls' 3
-# aggregate all 'ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls' ''
+# parse "ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls"
+# aggregate "ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls" 3
+# aggregate all "ÌÅÍÞ ÃÀÌÌÀ_2  _ñ 8 ïî 12 ôåâðàëÿ.xls" ""
 log('#' * 100)
 log('Script Launched. Arguments count: ' + str(len(sys.argv)))
 
