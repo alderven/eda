@@ -52,7 +52,8 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	//$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	#$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
 	$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
