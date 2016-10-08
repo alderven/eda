@@ -16,10 +16,10 @@ print $navigationBar;
 <!-- Page title -->
 <div align="center"><h1>Что нового?</h1></div>
 
-<!-- Update 20.09.2016-->
-<div><h3><table class="table"><tr class="info"><td align="center">Версия от 20.09.2016</td></tr></tbody></table></h3></div>
+<!-- Update 08.10.2016-->
+<div><h3><table class="table"><tr class="info"><td align="center">Версия от 08.10.2016</td></tr></tbody></table></h3></div>
 Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
-<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20160920_autofill.png"></a></div>
+<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20161008_autofill.png"></a></div>
 <hr>
 
 <!-- Update 20.08.2016-->

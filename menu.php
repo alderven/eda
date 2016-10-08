@@ -216,7 +216,7 @@ if ($showNotification == 1) {
 							<div class="modal-body">
 								<!-- MESSAGE START -->
 								Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
-								<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20160920_autofill.png"></a></div>
+								<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20161008_autofill.png"></a></div>
 								<hr>
 								<!-- MESSAGE END -->
 							</div>
