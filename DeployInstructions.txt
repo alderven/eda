@@ -1,0 +1,38 @@
+﻿####################################################################################################
+DEPLOY 2016.10.08
+####################################################################################################
+
+1. Get latest data from the GitHub
+
+2. Replace following columns in 'users' table:
+
+   Old columns:
+     AutofillSetting_OrderInCimus
+     AutofillSetting_OrderInAdam
+     AutofillSetting_Rich
+     AutofillSetting_FavoriteDishes
+
+   New columns:
+     AutofillSetting_AutofillType
+     AutofillSetting_Company
+
+3. Execute following SQL statements:
+
+   UPDATE users
+   SET ShowNotification = 1
+
+   UPDATE users
+   SET AutofillSetting_AutofillType = 0
+
+   UPDATE users
+   SET AutofillSetting_Company = 0
+
+4. Check 'Autofill' functionality
+
+5. a) Switch emails in 'SendEmail.php' to Debug
+   b) Order some dishes
+   c) Press 'Отправить заказ Серегю/Адаму' button
+   d) Go to your mailbox, check that you receive both emails
+   e) Open attached Excel files, check that ordered dishes are correct
+
+6. Switch emails in 'SendEmail.php' to Release
