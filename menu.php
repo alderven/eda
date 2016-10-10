@@ -215,8 +215,10 @@ if ($showNotification == 1) {
 							</div>
 							<div class="modal-body">
 								<!-- MESSAGE START -->
-								Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
-								<div align="center"><a href="settings_autofill.php" target="_blank"><img src="img\update20161008_autofill.png"></a></div>
+								<!-- Update 30.10.2016-->
+								<div><h3><table class="table"><tr class="info"><td align="center">Версия от 30.10.2016</td></tr></tbody></table></h3></div>
+								На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
+								<div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
 								<hr>
 								<!-- MESSAGE END -->
 							</div>
@@ -302,8 +304,9 @@ print  '<div class="container-fluid">
 					</form>
 				</div>
 				<div class="col-sm-2 text-center">
-					<a href="#" data-toggle="tooltip" title="Автозаполнение"><button ng-click="vm.autofill()" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
+					<a href="#" data-toggle="tooltip" title="Автозаполнить заказ"><button ng-click="vm.autofill()" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
 					<a href="#" data-toggle="tooltip" title="Очистить заказ"><button ng-click="vm.cleanupOrders()" type="submit" class="btn btn btn-danger"><span class="glyphicon glyphicon-trash"></span> </button></a>
+					<a href="print.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
 					<form action="SendEmail.php?date=" method="get">

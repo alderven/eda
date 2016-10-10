@@ -16,6 +16,12 @@ print $navigationBar;
 <!-- Page title -->
 <div align="center"><h1>Что нового?</h1></div>
 
+<!-- Update 30.10.2016-->
+<div><h3><table class="table"><tr class="info"><td align="center">Версия от 30.10.2016</td></tr></tbody></table></h3></div>
+На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
+<div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
+<hr>
+
 <!-- Update 08.10.2016-->
 <div><h3><table class="table"><tr class="info"><td align="center">Версия от 08.10.2016</td></tr></tbody></table></h3></div>
 Переработаны <a href="settings_autofill.php" target="_blank">настройки Автозаполнения</a>:</p>
