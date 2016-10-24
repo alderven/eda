@@ -21,6 +21,9 @@ print $navigationBar;
 На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
 <div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
 <hr>
+<p>На странице авторизации теперь отображается общее количество заказов:
+<div align="center"><img src="img\update20161030_loginPage.png"></div>
+<hr>
 
 <!-- Update 08.10.2016-->
 <div><h3><table class="table"><tr class="info"><td align="center">Версия от 08.10.2016</td></tr></tbody></table></h3></div>

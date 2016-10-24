@@ -5,7 +5,7 @@
 						<div class="text-center">
 							<span class="text-muted">
 								<span class="glyphicon glyphicon-cutlery"></span>
-								Сервис "Еда" © 2015-2016
+								Сервис «Еда» © 2015-2016
 							</span>
 						<div>
 					</div>

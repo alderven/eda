@@ -220,6 +220,9 @@ if ($showNotification == 1) {
 								На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
 								<div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
 								<hr>
+								<p>На странице авторизации теперь отображается общее количество заказов:
+								<div align="center"><img src="img\update20161030_loginPage.png"></div>
+								<hr>
 								<!-- MESSAGE END -->
 							</div>
 							<div class="modal-footer">
