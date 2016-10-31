@@ -8,16 +8,18 @@ DEPLOY 2016.10.30
 
 3. Copy files from GitHub temp dir to the 'htdocs' folder
 
-4. Check 'print' functionality
+4. Add VV recepient in SendEmail.php
 
-5. Check 'what's new' page
+5. Check 'print' functionality
 
-6. Execute following SQL statement:
+6. Check 'what's new' page
+
+7. Execute following SQL statement:
 
    UPDATE users
    SET ShowNotification = 1
 
-7. Check 'what's new pop-up on start
+8. Check 'what's new pop-up on start
 
 ####################################################################################################
 DEPLOY 2016.10.08
