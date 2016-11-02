@@ -14,8 +14,16 @@ function orders_sum()
 
 function bludo($sum)
 {
-	$last_digit = substr( $sum, -1 );
+	$last_2_digits = substr( $sum, -2 );
+	switch ($last_2_digits) {
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+			return 'блюд';
+	}
 	
+	$last_digit = substr( $sum, -1 );
 	switch ($last_digit) {
 		case 0:
 		case 5:
