@@ -31,7 +31,7 @@ $(document).ready(function() {
 # 1. Display Navigation Bar
 print $navigationBar;
 
-print '<div align="center"><h1>Средняя стоимость заказа в день</h1></div><br><br>';
+print '<div align="center"><h1>Статистика по стоимости заказов</h1></div><br><br>';
 
 # 2. Generate table header
 print '
