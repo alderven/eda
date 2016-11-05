@@ -3,9 +3,10 @@ session_start();
 require_once "header.php";
 require_once "config.php";
 
-// Define $myusername and $mypassword 
+// Define User settings
 $myusername=strtolower($_POST['myusername']); 
-$mypassword=$_POST['mypassword']; 
+$mypassword=$_POST['mypassword'];
+$refer_url= $_SESSION['ReferURL'];
 
 // To protect MySQL injection
 $myusername = stripslashes($myusername);
@@ -33,7 +34,8 @@ if($count==1){
 		# header("location:index.php");
 	}
 	else {
-		header("location:menu.php");	
+		#header("location:menu.php");
+		header("location:$refer_url");
 	}
 }
 else {

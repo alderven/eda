@@ -77,6 +77,7 @@ if($count == 1){
 }
 else {
 	$_SESSION['errorMessage'] = 'Введенный Вами адрес электронной почты не найден';
+	unset($_SESSION['myusername']);
 	header("location:ForgotPassword.php");
 }
 ?>
