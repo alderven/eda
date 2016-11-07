@@ -5,17 +5,14 @@ require_once "config.php";
 include 'Mail.php';
 include 'Mail/mime.php';
 
-// 1. Get Date
-$date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
-
-// Display popup if email successfully sent.
+# Display popup if email successfully sent.
 function popup_success($email, $date) {
 	$_SESSION['modal_title'] = 'Письмо успешно отправлено';
 	$_SESSION['modal_text'] = 'Проверьте свой ящик ' . $email . ', вы должны получить копию письма.';
 	header("location:menu.php?date=$date");
 }
 
-// Transliterate (for attachment file name)
+# Transliterate (for attachment file name)
 function rus2translit($string) {
     $converter = array(
         'а' => 'a',   'б' => 'b',   'в' => 'v',
@@ -45,28 +42,28 @@ function rus2translit($string) {
     return strtr($string, $converter);
 }
 
-// Send Email
+# Send Email
 function send_email($company, $file, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass)
 {
 	##############################################################################################
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	#$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
 	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
-	// $mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
+	# $mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
 		$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-		// $mail_to = 'aananyev@adalisk.com'; // Debug
+		# $mail_to = 'aananyev@adalisk.com'; // Debug
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
-	$attachment_name = rus2translit($surname) . '_' . $week_number . '.xls';
+	$attachment_name = substr(rus2translit($name), 0, 1) . rus2translit($surname) . '_' . $week_number . '.xls';
 	if ("$week_number" === '0')
 	{
 		$subject = $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
-		$attachment_name = rus2translit($surname) . '.xls';
+		$attachment_name = substr(rus2translit($name), 0, 1) . rus2translit($surname) . '.xls';
 	}
 	
 	$subject = "=?UTF-8?B?" . base64_encode(html_entity_decode($subject, ENT_COMPAT, 'UTF-8')) . "?=";
@@ -109,11 +106,10 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 
 try_again:
 
-// 1. Get Date
+# 1. Get Date
 $date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
-//print '$date: «' . $date . '» Current date: «' . date("Y-m-d") . '». $_GET[\'date\']: «' . $_GET['date'] . '»';
 
-// 6. Get ExcelId by Date (Date is equal to date of opened UI tab by User)
+# 2. Get ExcelId by Date (Date is equal to date of opened UI tab by User)
 $sql = "SELECT DISTINCT ExcelId FROM $table_food WHERE Date = '$date'";
 print $sql;
 $result = $conn->query($sql);
@@ -123,7 +119,7 @@ $excel_id = null;
 }
 print ' Excel ID:' . $excel_id;
 
-// 7. Get all Dates by ExcelId
+# 3. Get all Dates by ExcelId
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE ExcelId = '$excel_id'";
 $result = $conn->query($sql);
 $dates = '';
@@ -133,18 +129,17 @@ $dates = '';
 $dates = trim($dates); # remove space at the end of string
 $dates = trim($dates, ",");  # remove comma at the end of string
 
-// 8. Find all ExcelId's by Date's
+# 4. Find all ExcelId's by Date's
 $sql = "SELECT DISTINCT ExcelId FROM $table_food WHERE Date IN ($dates)";
 $result = $conn->query($sql);
 $excel_ids = array();
  while ($row = $result->fetch_assoc()) {
 	 
-	 // 7. Check if User order anything in this Excel.
+	 # 5. Check if User order anything in this Excel.
 	$sql1 = "SELECT $table_orders.MenuItemId FROM $table_orders
 			JOIN $table_users ON $table_orders.UserId = $table_users.Id
 			JOIN $table_food ON $table_food.Id = $table_orders.MenuItemId
 			WHERE $table_users.Id = $user_id AND $table_food.ExcelId = '" . $row["ExcelId"] . "'";
-	//print $sql1;
 	$result1 = $conn->query($sql1);	
 	
 	if ($result1->num_rows > 0)
@@ -155,7 +150,7 @@ $excel_ids = array();
 
 $files_inside_zip = array();
 
-// 8. If User do not make order at all.
+# 6. If User do not make order at all.
 if (count($excel_ids) == 0)
 {
 	$_SESSION['modal_title'] = 'Письмо не отправлено';
@@ -163,10 +158,10 @@ if (count($excel_ids) == 0)
 	header("location:menu.php?date=$date");
 }
 else {
-	// 9. Loop over ExcelId's.
+	# 7. Loop over ExcelId's.
 	foreach ($excel_ids as $excel_id) {
 
-		// 10. Get Dates range.
+		# 8. Get Dates range.
 		$dates = array();
 		$sql = "SELECT DISTINCT Date FROM $table_food WHERE ExcelId = '$excel_id' ORDER BY Date ASC";
 		$result = $conn->query($sql);
@@ -198,7 +193,8 @@ else {
 		}
 		
 		// 13. Generate new file name
-		$newfile = './upload/' . rus2translit($surname) . '_' . rus2translit($company) . '_' . $week_number . '.xls';
+		$newfile = './upload/' . substr(rus2translit($name), 0, 1) . rus2translit($surname) . '_' . rus2translit($company) . '_' . $week_number . '.xls';
+		error_log('SendEmail.php: line 197: $newfile: ' . $newfile, 0);
 		array_push($files_inside_zip, $newfile);
 		
 		// 14. Delete new file if exist
