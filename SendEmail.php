@@ -5,10 +5,17 @@ require_once "config.php";
 include 'Mail.php';
 include 'Mail/mime.php';
 
-# Display popup if email successfully sent.
+# Display popup if email successfully sent
 function popup_success($email, $date) {
 	$_SESSION['modal_title'] = 'Письмо успешно отправлено';
 	$_SESSION['modal_text'] = 'Проверьте свой ящик ' . $email . ', вы должны получить копию письма.';
+	header("location:menu.php?date=$date");
+}
+
+# Display popup if email was NOT sent
+function popup_error($email, $date) {
+	$_SESSION['modal_title'] = 'Ошибка генерации Excel файла';
+	$_SESSION['modal_text'] = 'Произошла ошибка при генерации Excel файла. Попробуйте отправить заказ позже.';
 	header("location:menu.php?date=$date");
 }
 
@@ -168,14 +175,7 @@ else {
 		while ($row = $result->fetch_assoc()) {
 			array_push($dates, $row["Date"]);
 		}
-		
-		/*
-		print ($sql);
-		print('<br>');
-		print_r ($dates);
-		exit();
-		*/
-		
+			
 		// 11. Get Company Name.
 		$company = '';
 		$sql = "SELECT DISTINCT Company FROM $table_food WHERE ExcelId = '$excel_id'";
@@ -210,18 +210,34 @@ else {
 		else {
 			
 			// 16. Generate Excel File with Python Script
-			exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate \"" . $excel_id . "\" " . $user_id . " \"" . $newfile . "\"");	
-				
-			// 17. Send Email
-			if (file_exists($newfile)) {
-				send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass);
+			$attempts_count = 10;
+			$exit_code = null;
+			$output = array();
+			for ($i = 1; $i <= $attempts_count; $i++) {
+				$exit_code = exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate \"" . $excel_id . "\" " . $user_id . " \"" . $newfile . "\"", $output, $exit_code);
+				error_log('Generate Excel file with Python. SendEmail.php: line 218: $i [attempt]: '. $i . '; ' . '$output: «' . implode(', ', $output) . '»', 0);
+				error_log('Generate Excel file with Python. SendEmail.php: line 219: $i [attempt]: '. $i . '; ' . '$exit_code: «' . $exit_code . '»', 0);
+				if ($exit_code == 'OK') {
+					break;
+				}
+			}
 			
-				// 18. Display success popup
-				popup_success($email, $date);
+			if ($exit_code == 'OK') {
+				// 17. Send Email
+				if (file_exists($newfile)) {
+					send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass);
+				
+					// 18. Display success popup
+					popup_success($email, $date);
+				}
+				else {
+					print 'Файл "' . $newfile . '" не отправлен! Количество Excel Ids:"' . count($excel_ids) . '"<br>';
+					goto try_again;
+				}
 			}
 			else {
-				print 'Файл "' . $newfile . '" не отправлен! Количество Excel Ids:"' . count($excel_ids) . '"<br>';
-				goto try_again;
+				// 18. Display error popup
+				popup_error($email, $date);
 			}
 		}
 	}

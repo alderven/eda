@@ -9,7 +9,7 @@ from datetime import date
 from datetime import datetime
 
 upload_folder = 'c:\\xampp\\htdocs\\upload\\'
-print('Content-Type: text/html\n\n')
+# print('Content-Type: text/html\n\n')
 
 
 ########################################################################################################################
@@ -57,7 +57,7 @@ class DB:
 
     @staticmethod
     def write(dish):
-        print(dish.date, dish.type, dish.name, dish.weight, dish.price, dish.column, dish.row, dish.sheet_index, dish.company, dish.excel_id, dish.week_number, '<br>')
+        # print(dish.date, dish.type, dish.name, dish.weight, dish.price, dish.column, dish.row, dish.sheet_index, dish.company, dish.excel_id, dish.week_number, '<br>')
         sql = """INSERT INTO eda.food (Date, Type, Name, Weight, Price, Contain, CellColumn, CellRow, SheetIndex, Company, ExcelId, WeekNumber)
         VALUES ('%(Date)s', '%(Type)s', '%(Name)s', '%(Weight)s', '%(Price)s', '%(Contain)s', '%(CellColumn)s', '%(CellRow)s', '%(SheetIndex)s', '%(Company)s', '%(ExcelId)s', '%(WeekNumber)s')
         """%{'Date': dish.date,
@@ -115,7 +115,8 @@ class Parse:
                     day = date_tmp_splt[0]
                     date_parsed = True
                 except:
-                    print('Date Parsing. Attempt 1: Failed.')
+                    pass
+                    # print('Date Parsing. Attempt 1: Failed.')
 
                 # Date type is '25.07.2016' and date located in 'A3' cell
                 if date_parsed is False:
@@ -128,7 +129,8 @@ class Parse:
                         day = date_tmp_splt[0]
                         date_parsed = True
                     except:
-                        print('Date Parsing. Attempt 2: Failed.')
+                        pass
+                        # print('Date Parsing. Attempt 2: Failed.')
 
                 # Date type '24 но€бр€ 2015 г.' and located in 'A3' cell
                 if date_parsed is False:
@@ -140,7 +142,8 @@ class Parse:
                         day = date_tmp[2]
                         date_parsed = True
                     except:
-                        print('Date Parsing. Attempt 3: Failed.')
+                        pass
+                        # print('Date Parsing. Attempt 3: Failed.')
 
                 # Date type ... and located in 'A2' cell
                 if date_parsed is False:
@@ -152,7 +155,8 @@ class Parse:
                         day = date_tmp[2]
                         date_parsed = True
                     except:
-                        print('Date Parsing. Attempt 4: Failed.')
+                        pass
+                        # print('Date Parsing. Attempt 4: Failed.')
 
                 # Date type is string
                 if date_parsed is False:
@@ -170,7 +174,8 @@ class Parse:
                                 month = k + 1
                             k += 1
                     except:
-                        print('Date Parsing. Attempt 5: Failed.')
+                        pass
+                        # print('Date Parsing. Attempt 5: Failed.')
 
                 dish.date = str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2)
 
@@ -341,7 +346,7 @@ class Aggregate:
                 sheet_index = row[0] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_row = row[1] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_column = row[2] + column_iterator  # '+1' for converting format from xlrd to win32com.
-                print('Sheet Index: ', sheet_index, 'Row: ', cell_row, 'Column: ', cell_column)
+                # print('Sheet Index: ', sheet_index, 'Row: ', cell_row, 'Column: ', cell_column)
 
                 # 5. Write to Excel File.
                 ws = wb.Worksheets(sheet_index)
@@ -425,7 +430,7 @@ class Aggregate:
                 sheet_index = row[0] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_row = row[1] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_column = row[2] + column_iterator  # '+1' for converting format from xlrd to win32com.
-                #print('Sheet Index: ', sheet_index, 'Row: ', cell_row, 'Column: ', cell_column)
+                # print('Sheet Index: ', sheet_index, 'Row: ', cell_row, 'Column: ', cell_column)
                 log('Sheet Index: ' + str(sheet_index) + '. Row: ' + str(cell_row) + '. Column: ' + str(cell_column))
 
                 # 8. Write to Excel
@@ -457,7 +462,7 @@ class Aggregate:
             log('Error arguments: ' + e.args)
 
         # 11. Quit Excel
-        print('11. Quit Excel')
+        # print('11. Quit Excel')
         try:
             excel.Application.Quit()
         except Exception as e:
@@ -482,6 +487,7 @@ class Aggregate:
         excel.Application.Quit()
         os.system("taskkill /f /im EXCEL.EXE")  # In case if previous process not finished
         log('Save Excel. Completed')
+        print('OK')
 
     @staticmethod
     def save_as_excel(wb, excel_file_name, excel):
@@ -503,6 +509,7 @@ class Aggregate:
         excel.Application.Quit()
         os.system("taskkill /f /im EXCEL.EXE")  # In case if previous process not finished
         log('Save Excel. Completed')
+        print('OK')
 
 ########################################################################################################################
 
