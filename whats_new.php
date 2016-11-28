@@ -53,7 +53,7 @@ print $navigationBar;
 <p>Перейти к настройке <a href="settings_autofill.php" target="_blank">сейчас</a>.</p>
 <hr>
 <p>Список Ваших любимых блюд:</p>
-<div align="center"><a href="«Меню»" target="_blank"><img src="img\update20160727_favoriteDishes.png"></a></div>
+<div align="center"><a href="stat_favorite_dishes.php" target="_blank"><img src="img\update20160727_favoriteDishes.png"></a></div>
 <br>
 <p>Статистика находится в разделе: «Статистика» → «Любимые блюда».</p>
 <p>Перейти к статистике <a href="stat_favorite_dishes.php" target="_blank">сейчас</a>.</p>

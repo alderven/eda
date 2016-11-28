@@ -50,14 +50,14 @@ function rus2translit($string) {
 }
 
 # Send Email
-function send_email($company, $file, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass)
+function send_email($company, $file, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass, $user_id)
 {
 	##############################################################################################
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
+	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
 	# $mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
@@ -66,11 +66,11 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
-	$attachment_name = substr(rus2translit($name), 0, 1) . rus2translit($surname) . '_' . $week_number . '.xls';
+	$attachment_name = sprintf('%02d', $user_id) . '_' . rus2translit($surname) . '_' . substr(rus2translit($name), 0, 1) . '_' . $week_number . '.xls';
 	if ("$week_number" === '0')
 	{
 		$subject = $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
-		$attachment_name = substr(rus2translit($name), 0, 1) . rus2translit($surname) . '.xls';
+		$attachment_name = sprintf('%02d', $user_id) . '_' . rus2translit($surname) . '_' . substr(rus2translit($name), 0, 1) . '.xls';
 	}
 	
 	$subject = "=?UTF-8?B?" . base64_encode(html_entity_decode($subject, ENT_COMPAT, 'UTF-8')) . "?=";
@@ -193,7 +193,7 @@ else {
 		}
 		
 		// 13. Generate new file name
-		$newfile = './upload/' . substr(rus2translit($name), 0, 1) . rus2translit($surname) . '_' . rus2translit($company) . '_' . $week_number . '.xls';
+		$newfile = './upload/' . sprintf('%02d', $user_id) . '_' . rus2translit($surname) . '_' . substr(rus2translit($name), 0, 1) . '_' . rus2translit($company) . '_' . $week_number . '.xls';
 		error_log('SendEmail.php: line 197: $newfile: ' . $newfile, 0);
 		array_push($files_inside_zip, $newfile);
 		
@@ -225,7 +225,7 @@ else {
 			if ($exit_code == 'OK') {
 				// 17. Send Email
 				if (file_exists($newfile)) {
-					send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass);
+					send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass, $user_id);
 				
 					// 18. Display success popup
 					popup_success($email, $date);
