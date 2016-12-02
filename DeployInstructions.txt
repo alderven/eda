@@ -1,5 +1,36 @@
 ﻿####################################################################################################
-DEPLOY 2016.11.08
+DEPLOY 2016.12.03 | EXCEL
+####################################################################################################
+
+1. Execute following SQL statement:
+
+CREATE TABLE eda.excel ( Id SMALLINT NOT NULL AUTO_INCREMENT , DateFirst DATE NOT NULL , DateLast DATE NOT NULL , Company TINYTEXT NOT NULL, WeekNumber TINYINT NOT NULL, DaysCount TINYINT NOT NULL , DishesCount SMALLINT NOT NULL, OriginalFileName TINYTEXT NOT NULL , FileLocation TINYTEXT NOT NULL , Checksum TINYTEXT NOT NULL , UploadDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , UploadedBy SMALLINT NOT NULL , PRIMARY KEY (Id)) ENGINE = InnoDB;
+
+Description: This SQL statement creates table "excel" with the following columns:
+
+ # | Column Name		|	Type
+------------------------------------
+ 1 | Id					|	SMALLINT
+ 2 | DateFirst			|	DATE
+ 3 | DateLast			|	DATE
+ 4 | Company			|	SMALLINT
+ 5 | WeekNumber			|	TINYINT
+ 6 | DaysCount			|	TINYINT
+ 7 | DishesCount		|	SMALLINT
+ 8 | OriginalFileName	|	TINYTEXT
+ 9 | FileLocation		|	TINYTEXT
+10 | Checksum			|	TINYTEXT
+11 | UploadDate			|	DATETIME
+12 | UploadedBy			|	SMALLINT
+
+2. Get latest source code from the GitHub
+ 
+3. Copy ParseAndAggregate.cgi to the 'cgi-bin' folder
+
+4. Perform 'Extended Happy Path Test'**
+
+####################################################################################################
+DEPLOY 2016.11.08 | 
 ####################################################################################################
 
 1. Submit 'ParseAndAggregate.cgi' to the GitHub
@@ -11,7 +42,7 @@ DEPLOY 2016.11.08
 4. Switch email recepients in 'SendEmail.php' to Release incl. VV
 
 ####################################################################################################
-DEPLOY 2016.10.30
+DEPLOY 2016.10.30 | WHAT'S NEW
 ####################################################################################################
 
 1. Connect to the 'EDA' EC2 machine
@@ -34,7 +65,7 @@ DEPLOY 2016.10.30
 8. Check 'what's new pop-up on start
 
 ####################################################################################################
-DEPLOY 2016.10.08
+DEPLOY 2016.10.08 | AUTOFILL
 ####################################################################################################
 
 1. Get latest data from the GitHub
@@ -71,3 +102,26 @@ DEPLOY 2016.10.08
    e) Open attached Excel files, check that ordered dishes are correct
 
 6. Switch emails in 'SendEmail.php' to Release
+
+####################################################################################################
+VERIFICATIONS
+####################################################################################################
+
+* 'Happy Path Test'
+
+Precondition: Switch email recepients to the Test in 'SendEmail.php'
+Test:
+   1. Login to the EDA site
+   2. Order dishes by both companies
+   3. Press 'Отправить...' button
+   4. Check email box:
+	  => Email box should contains two emails
+   5. Open Excel files attached to the emails
+	  => Dishes ordered on the website should be marked in the Excel files
+Postexecution: Switch email recepients to the Production in 'SendEmail.php'
+
+** 'Extended Happy Path Test'
+
+1. Upload Excel file\files
+   => Check, that uploaded dishes displayed on 'Menu' page
+2. Perform 'Happy Path Test'

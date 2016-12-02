@@ -9,8 +9,6 @@ from datetime import date
 from datetime import datetime
 
 upload_folder = 'c:\\xampp\\htdocs\\upload\\'
-# print('Content-Type: text/html\n\n')
-
 
 ########################################################################################################################
 months = ['янв', 'февр', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сент', 'окт', 'ноя', 'дека']
@@ -42,7 +40,7 @@ class Dish:
 def log(text):
     t = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     with open('python.log', 'a') as f:
-        f.write(t + '\t' + text + '\n')
+        f.write(t + '\t' + str(text) + '\n')
 ########################################################################################################################
 
 
@@ -50,14 +48,18 @@ def log(text):
 class DB:
 
     @staticmethod
-    def read(sql):
+    def read(sql, cur):
         log(sql)
         cur.execute(sql)
         return cur
 
     @staticmethod
-    def write(dish):
-        # print(dish.date, dish.type, dish.name, dish.weight, dish.price, dish.column, dish.row, dish.sheet_index, dish.company, dish.excel_id, dish.week_number, '<br>')
+    def write(sql, cur, conn):
+        cur.execute(sql)
+        conn.commit()
+
+    @staticmethod
+    def insert_dish(dish, cur, conn):
         sql = """INSERT INTO eda.food (Date, Type, Name, Weight, Price, Contain, CellColumn, CellRow, SheetIndex, Company, ExcelId, WeekNumber)
         VALUES ('%(Date)s', '%(Type)s', '%(Name)s', '%(Weight)s', '%(Price)s', '%(Contain)s', '%(CellColumn)s', '%(CellRow)s', '%(SheetIndex)s', '%(Company)s', '%(ExcelId)s', '%(WeekNumber)s')
         """%{'Date': dish.date,
@@ -72,8 +74,8 @@ class DB:
              'Company': dish.company,
              'ExcelId': dish.excel_id,
              'WeekNumber': dish.week_number}
-        cur.execute(sql)
-        conn.commit()
+        DB.write(sql, cur, conn)
+
 ########################################################################################################################
 
 
@@ -81,9 +83,9 @@ class DB:
 class Parse:
 
     @staticmethod
-    def adam(excel, dish):
+    def adam(cur, conn, excel, dish, parse_result):
 
-        log('Method launched: Parse: Adam')
+        log('\tParse Excel "Adam"...')
 
         # 1. Set default WeekNumber.
         dish.week_number = 0
@@ -116,7 +118,6 @@ class Parse:
                     date_parsed = True
                 except:
                     pass
-                    # print('Date Parsing. Attempt 1: Failed.')
 
                 # Date type is '25.07.2016' and date located in 'A3' cell
                 if date_parsed is False:
@@ -130,7 +131,6 @@ class Parse:
                         date_parsed = True
                     except:
                         pass
-                        # print('Date Parsing. Attempt 2: Failed.')
 
                 # Date type '24 ноября 2015 г.' and located in 'A3' cell
                 if date_parsed is False:
@@ -143,7 +143,6 @@ class Parse:
                         date_parsed = True
                     except:
                         pass
-                        # print('Date Parsing. Attempt 3: Failed.')
 
                 # Date type ... and located in 'A2' cell
                 if date_parsed is False:
@@ -156,7 +155,6 @@ class Parse:
                         date_parsed = True
                     except:
                         pass
-                        # print('Date Parsing. Attempt 4: Failed.')
 
                 # Date type is string
                 if date_parsed is False:
@@ -175,9 +173,9 @@ class Parse:
                             k += 1
                     except:
                         pass
-                        # print('Date Parsing. Attempt 5: Failed.')
 
                 dish.date = str(year) + '-' + str(month).zfill(2) + '-' + str(day).zfill(2)
+                parse_result.dates.append(dish.date)
 
                 # 4. Move to next x lines for reading Menu
                 j += 1
@@ -209,14 +207,18 @@ class Parse:
 
                     # Check, whether Excel row is not empty.
                     if dish.name:
-                        DB.write(dish)
+                        DB.insert_dish(dish, cur, conn)
+                        parse_result.dishes_count += 1
                     j += 1
             i += 1
 
-    @staticmethod
-    def cimus(file_name, excel, dish):
+        log('\t...completed')
+        return parse_result
 
-        log('Method launched. Parse: Cimus')
+    @staticmethod
+    def cimus(cur, conn, file_name, excel, dish, parse_result):
+
+        log('\tParse Excel "Cimus"...')
 
         # 1. Parse filename for Week Number.
         # Assume that filename is '45 Неделя ООО Адалиск.xls' or '05 Неделя ООО Адалиск.xls'
@@ -231,6 +233,7 @@ class Parse:
             week_number = 0
 
         dish.week_number = week_number
+        parse_result.week_number = week_number
 
         # 2. Parse Excel
         i = 0
@@ -243,6 +246,7 @@ class Parse:
                     # exotic situation when you uploading Excel for next year before the New Year
                     year += 1
                 dish.date = str(year) + '-' + sheet.name[3:] + '-' + sheet.name[:2]
+                parse_result.dates.append(dish.date)
                 j = 41
                 dish_type_previous = ''
 
@@ -271,35 +275,67 @@ class Parse:
                         dish.price = sheet.cell_value(rowx=j, colx=4)
                         dish.column = 5
                         dish.row = j
-                        DB.write(dish)
+                        DB.insert_dish(dish, cur, conn)
+                        parse_result.dishes_count += 1
                         j += 1
             else:
                 pass
             i += 1
 
+        log('\t...completed')
+        return parse_result
+
     @staticmethod
     def find_company_name(excel):
-        log('Method launched. Find Company')
+        log('\tFind Company name...')
         sheet = excel.sheet_by_index(0)
         try:
             sheet.cell_value(rowx=1, colx=5)
             company_name = CompanyName.cimus
         except:
             company_name = CompanyName.adam
-        log('Method completed. Company: ' + str(company_name))
+
+        log('\t...completed')
         return company_name
 
     @staticmethod
-    def main(file_name):
-        log('Method launched. Main. Excel file name: ' + str(file_name))
-        Dish.excel_id = file_name
+    def main(conn, cur, file_name, excel_id):
+        log('Run "Parse/Main" method...')
 
+        class ParseResult:
+            dates = []
+            dishes_count = 0
+            week_number = 0
+
+        Dish.excel_id = excel_id
         excel = xlrd.open_workbook(file_name, formatting_info=True, encoding_override="cp1252")
         Dish.company = Parse.find_company_name(excel)
         if Dish.company == CompanyName.cimus:
-            Parse.cimus(file_name, excel, Dish)
+            parse_result = Parse.cimus(cur, conn, file_name, excel, Dish, ParseResult)
         else:
-            Parse.adam(excel, Dish)
+            parse_result = Parse.adam(cur, conn, excel, Dish, ParseResult)
+
+        # Write excel metadata to the DB
+        log(Dish.company)
+        # log(parse_result.dates)
+        # log(parse_result.dates[0])
+        # log(parse_result.dates[-1])
+        log(parse_result.week_number)
+        log(parse_result.dishes_count)
+
+        sql = 'UPDATE excel SET ' \
+              'Company="' + Dish.company + '", ' \
+              'DateFirst="' + parse_result.dates[0] + '", ' \
+              'DateLast="' + parse_result.dates[-1] + '", ' \
+              'DaysCount="' + str(len(parse_result.dates)) + '", ' \
+              'WeekNumber=' + str(parse_result.week_number) + ', ' \
+              'DishesCount=' + str(parse_result.dishes_count) +\
+              ' WHERE Id = ' + str(excel_id)
+
+        log(sql)
+        DB.write(sql, cur, conn)
+        log('...completed')
+
 ########################################################################################################################
 
 
@@ -307,41 +343,51 @@ class Parse:
 class Aggregate:
 
     @staticmethod
-    def for_one_user(php_path_to_excel, user_id, new_file_name):
+    def for_one_user(cur, excel_id, user_id, new_file_name):
 
-        log('Method launched. Aggregate: for one user')
+        log('Aggregate "For One User"...')
 
-        # 1. Get Dishes ordered by User.
+        # 1. Get Excel File location
+        excel_file_location = None
+        sql = 'SELECT FileLocation from excel WHERE Id = ' + excel_id
+        result = DB.read(sql, cur)
+        for row in result:
+            excel_file_location = row[0]
+        if excel_file_location is None:
+            print('Unable to get information about Excel file location')
+            exit()
+
+        # 2. Get Dishes ordered by User.
         menu_item_ids = []
         counts = []
         # sql = 'SELECT orders.MenuItemId, orders.Count FROM eda.orders WHERE orders.UserId = ' + str(user_id)
 
         sql = """SELECT orders.MenuItemId, orders.Count FROM orders
                  JOIN food ON food.Id = orders.MenuItemId
-                 WHERE orders.UserId = """ + str(user_id) + """ AND food.ExcelId = '""" + php_path_to_excel + """'"""
+                 WHERE orders.UserId = """ + str(user_id) + """ AND food.ExcelId = '""" + excel_id + """'"""
 
-        result = DB.read(sql)
+        result = DB.read(sql, cur)
         for row in result:
             menu_item_ids.append(row[0])
             counts.append(row[1])
 
-        # 2. Calculate 'column_iterator' parameter.
+        # 3. Calculate 'column_iterator' parameter.
         column_iterator = 0
-        excel = xlrd.open_workbook(php_path_to_excel, formatting_info=True)
+        excel = xlrd.open_workbook(excel_file_location, formatting_info=True)
         if Parse.find_company_name(excel) == CompanyName.cimus:
             column_iterator = 1
 
-        # 3. Open Excel File
+        # 4. Open Excel File
         os.system("taskkill /f /im EXCEL.EXE")  # In case if previous process not finished.
         excel = win32com.client.dynamic.Dispatch("Excel.Application")
         excel_file_name = os.path.basename(new_file_name)
         wb = excel.Workbooks.Open(upload_folder + excel_file_name)
 
-        # 4. Write Users order to Excel file.
+        # 5. Write Users order to Excel file.
         i = 0
         while i < len(menu_item_ids):
             sql = 'SELECT SheetIndex, CellRow, CellColumn FROM eda.food WHERE Id = ' + str(menu_item_ids[i])
-            result = DB.read(sql)
+            result = DB.read(sql, cur)
             for row in result:
                 sheet_index = row[0] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_row = row[1] + 1  # '+1' for converting format from xlrd to win32com.
@@ -353,15 +399,14 @@ class Aggregate:
                 ws.Cells(cell_row, cell_column).Value = str(counts[i])
             i += 1
 
-        # 5. Save and Close Excel file.
+        # 6. Save and Close Excel file.
         Aggregate.save_excel(wb, excel_file_name, excel)
+        log('...completed')
 
     @staticmethod
-    def for_all_users(excel_id, new_file):
+    def for_all_users(cur, excel_id, new_file):
 
-        log('Method launched. Aggregate: for all users')
-        log('ExcelId: ' + excel_id)
-        log('New File: ' + new_file)
+        log('Aggregate "For All Users"...')
 
         # 1. Get distinct MenuItemId's
         log('1. Get Distinct MenuItemIds')
@@ -370,7 +415,7 @@ class Aggregate:
                     LEFT JOIN food
                     ON food.Id = orders.MenuItemId
                     WHERE food.ExcelId = \"""" + excel_id + """\""""
-        result = DB.read(sql)
+        result = DB.read(sql, cur)
         for row in result:
             for menu_item_id in row:
                 log('Got MenuItemId: ' + str(menu_item_id))
@@ -381,7 +426,7 @@ class Aggregate:
         total_count = []
         for menu_item_id in menu_item_ids:
             sql = 'SELECT SUM(Count) FROM orders WHERE MenuItemId = ' + str(menu_item_id)
-            result = DB.read(sql)
+            result = DB.read(sql, cur)
             for row in result:
                 for count in row:
                     log('MenuItemId: ' + str(menu_item_id) + '. Count: ' + str(count))
@@ -390,6 +435,7 @@ class Aggregate:
         # 3. Get the Company Name (required for 'column_iterator' parameter)
         log('3. Get the Company Name (required for column_iterator parameter)')
         column_iterator = 0
+        excel = None
         try:
             excel = xlrd.open_workbook(new_file, formatting_info=True)
         except Exception as e:
@@ -423,9 +469,10 @@ class Aggregate:
         # 7. Get the cell locations and values from DB
         log('7. Get the cell locations and values from DB')
         i = 0
+        wb = None
         while i < len(menu_item_ids):
             sql = 'SELECT SheetIndex, CellRow, CellColumn FROM eda.food WHERE Id = ' + str(menu_item_ids[i]) + ' AND ExcelId = "' + excel_id + '"'
-            result = DB.read(sql)
+            result = DB.read(sql, cur)
             for row in result:
                 sheet_index = row[0] + 1  # '+1' for converting format from xlrd to win32com.
                 cell_row = row[1] + 1  # '+1' for converting format from xlrd to win32com.
@@ -462,7 +509,6 @@ class Aggregate:
             log('Error arguments: ' + e.args)
 
         # 11. Quit Excel
-        # print('11. Quit Excel')
         try:
             excel.Application.Quit()
         except Exception as e:
@@ -471,6 +517,7 @@ class Aggregate:
 
         os.system("taskkill /f /im EXCEL.EXE")  # In case if previous process not finished
         log('=> Excel saving completed')
+        log('...completed')
 
     @staticmethod
     def save_excel(wb, excel_file_name, excel):
@@ -513,29 +560,44 @@ class Aggregate:
 
 ########################################################################################################################
 
-# conn = pymysql.connect(host='eda', user='eda_admin', passwd='eda12345', db='eda', charset='utf8')
-conn = pymysql.connect(host='localhost', user='root', passwd='12345', db='eda', charset='utf8')
-cur = conn.cursor()
 
-# Examples:
-# parse "МЕНЮ ГАММА_2  _с 8 по 12 февраля.xls"
-# aggregate "МЕНЮ ГАММА_2  _с 8 по 12 февраля.xls" 3
-# aggregate all "МЕНЮ ГАММА_2  _с 8 по 12 февраля.xls" ""
-log('#' * 100)
-log('Script Launched. Arguments count: ' + str(len(sys.argv)))
+########################################################################################################################
+def main():
+    
+    # conn = pymysql.connect(host='eda', user='eda_admin', passwd='eda12345', db='eda', charset='utf8')
+    conn = pymysql.connect(host='localhost', user='root', passwd='12345', db='eda', charset='utf8')
+    cur = conn.cursor()
 
-# Write all Args to log
-i = 0
-while i < len(sys.argv):
-    log('Argument ' + str(i) + ': ' + str(sys.argv[i]))
-    i += 1
+    log('#' * 100)
+    log('Script Launched. Arguments count: ' + str(len(sys.argv)))
+    
+    # Write all Args to log
+    i = 0
+    while i < len(sys.argv):
+        log('Argument ' + str(i) + ': ' + str(sys.argv[i]))
+        i += 1
+     
+    # Call methods according to the Args
+    if len(sys.argv) == 4 and sys.argv[1] == 'parse':
+        Parse.main(conn, cur, sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 5 and sys.argv[1] == 'aggregate':
+    
+        # Get Excel Id
+        excel_id = sys.argv[2]
+        if sys.argv[2] == 'all':
+            excel_id = sys.argv[3]
 
-# Call methods according to Args
-if len(sys.argv) == 3 and sys.argv[1] == 'parse':
-    Parse.main(sys.argv[2])
-elif len(sys.argv) == 5 and sys.argv[1] == 'aggregate' and sys.argv[2] == 'all':
-    Aggregate.for_all_users(sys.argv[3], sys.argv[4])
-elif len(sys.argv) == 5 and sys.argv[1] == 'aggregate':
-    Aggregate.for_one_user(sys.argv[2], sys.argv[3], sys.argv[4])
+        if sys.argv[2] == 'all':
+            new_file = sys.argv[4]
+            Aggregate.for_all_users(cur, excel_id, new_file)
+        else:
+            Aggregate.for_one_user(cur, excel_id, sys.argv[3], sys.argv[4])
+    else:
+        log('Warning! Arguments not fit')
+    
+    conn.close()
+########################################################################################################################
 
-conn.close()
+
+if __name__ == '__main__':
+    main()

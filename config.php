@@ -70,8 +70,7 @@ if(isset($_SESSION['myusername'])) {
 		$adminNavBar = '<li class="dropdown">
 					<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Администрирование<span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						<li><a href="admin_upload_excel.php"><span class="glyphicon glyphicon-cloud-upload"></span> Загрузка Меню на сервер</a></li>
-						<li><a href="admin_download_excel.php"><span class="glyphicon glyphicon-cloud-download"></span> Скачивание заполненного Меню</a></li>
+						<li><a href="excel.php"><span class="glyphicon glyphicon-paperclip"></span> Управление Excel файлами</a></li>
 						<li><a href="admin_stat_sum.php"><span class="glyphicon glyphicon-stats"></span> Статистика по стоимости заказов</a></li>
 					</ul>
 				</li>';

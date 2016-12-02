@@ -1,5 +1,4 @@
 <?php
-require_once "header.php";
 session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
@@ -35,69 +34,74 @@ function rus2translit($string) {
     );
     return strtr($string, $converter);
 }
-?>
 
-<body>
-<?php
-# 1. Display Navigation Bar
-print $navigationBar;
-
-print '<div align="center"><h1>Загрузка Меню на сервер</h1></div><br><br>';
-
-// Каталог, в который мы будем принимать файл:
-$uploaddir = './upload/';
-$uploadfile_cyr = $uploaddir.basename($_FILES['uploadfile']['name']);
-$uploadfile_trnslt = rus2translit($uploadfile_cyr);
-$uploadfile = str_replace('.xls', '', $uploadfile_trnslt) . '_' .  date('YmdHis') . '.xls';
-if (filesize($_FILES['uploadfile']['tmp_name']) == 0) {
-	print '<div class="alert alert-danger" role="alert">Вы пытаетесь загрузить пустой файл.</div>';
+# Display Alert on Excel Page
+function alert($type, $text) {
+	$_SESSION['alert_type'] = $type;
+	$_SESSION['alert_text'] = $text;
+	header("location:excel.php");
 }
 
-// Копируем файл из каталога для временного хранения файлов:
-else if (copy($_FILES['uploadfile']['tmp_name'], $uploadfile)) {
-	exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi parse " . "\"" . $uploadfile . "\"");
+# Get Temp File lolocation
+$file_tmp_location = $_FILES['uploadfile']['tmp_name'];
+
+# Calculate File Checksum
+$checksum = md5_file($file_tmp_location);
+
+$sql = "SELECT Id FROM excel WHERE Checksum = \"$checksum\"";
+$result = $conn->query($sql);
+if ($result->num_rows == 0) {
+
+	// Каталог, в который мы будем принимать файл:
+	$uploaddir = './upload/';
+	$original_filename = $_FILES['uploadfile']['name'];
+	$uploadfile_cyr = $uploaddir.basename($original_filename);
+	$uploadfile_trnslt = rus2translit($uploadfile_cyr);
+	$uploadfile = str_replace('.xls', '', $uploadfile_trnslt) . '_' .  date('YmdHis') . '.xls';
+	if (filesize($_FILES['uploadfile']['tmp_name']) == 0) {
+		# print '<div class="alert alert-danger" role="alert">Вы пытаетесь загрузить пустой файл.</div>';
+		alert("danger", "Ошибка загрузки Excel файла. Вы пытаетесь загрузить пустой файл");
+	}
+
+	// Копируем файл из каталога для временного хранения файлов:
+	else if (copy($file_tmp_location, $uploadfile)) {
+			
 	
-	// Get Total Dishes
-	$sql = "SELECT COUNT(Id) as Total FROM food WHERE ExcelId = '$uploadfile'";
-	if ($result = $conn->query($sql)) {
-		
-		print '<div class="alert alert-success" role="alert">Файл успешно загружен на сервер!</div>';
-		
-		$total_dishes = 0;
-		while ($row = $result->fetch_assoc()) {
-			$total_dishes = $row["Total"];
-		}
-		
-		// Get Company Names
-		$sql = "SELECT DISTINCT Company FROM food WHERE ExcelId = '$uploadfile'";
+		# Add data into Excel table
+		$sql = "INSERT INTO excel (OriginalFileName, FileLocation, Checksum, UploadedBy) VALUES	(\"$original_filename\", \"$uploadfile\", \"$checksum\", $user_id)";
 		$result = $conn->query($sql);
-		$company = 0;
-		while ($row = $result->fetch_assoc()) {
-			$company = $row["Company"];
-		}
-
-		// Get Dates range
-		$sql = "SELECT DISTINCT Date FROM food WHERE ExcelId = '$uploadfile' ORDER BY Date";
+		
+		# Get Excel Id
+		$excel_id = Null;
+		$sql = "SELECT Id FROM excel WHERE FileLocation = \"$uploadfile\"";
 		$result = $conn->query($sql);
-		$dates = array();
 		while ($row = $result->fetch_assoc()) {
-			array_push($dates, $row["Date"]);
+			$excel_id = $row["Id"];
 		}
-
-		// Print upload results
-		print '<p><b>Компания: </b>' . $company . '</p>';
-		print '<p><b>Всего блюд: </b>' . $total_dishes . '</p>';
-		print '<p><b>Даты: </b></p><pre>';
-		print_r($dates);
-		print '</pre>';
+		
+		# Parse Excel
+		exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi parse " . "\"" . $uploadfile . "\" " . $excel_id);
+		
+		# Get Added Excel info
+		$sql = "SELECT * FROM excel WHERE Id = '$excel_id'";
+		$result = $conn->query($sql);
+		if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				alert("success", "Файл успешно загружен на сервер!<br>Компания: " . $row["Company"] . '<br>Количество блюд: ' . $row["DishesCount"] . '<br>Количество дней: ' . $row["DaysCount"] . '<br>Даты: ' . $row["DateFirst"] . ' - ' . $row["DateLast"]);
+			}
+		}
+		else {
+			# print '<div class="alert alert-danger" role="alert">В базе данных не обнаружено новых блюд.</div>';
+			alert("danger", "Ошибка. В базе данных не обнаружено новых блюд");
+		}
 	}
 	else {
-		print '<div class="alert alert-danger" role="alert">В базе данных не обнаружено новых блюд.</div>';
+		# print '<div class="alert alert-danger" role="alert">Ошибка копирования файла из временной директории.</div>';
+		alert("danger", "Ошибка копирования файла из временной директории");
 	}
 }
 else {
-	print '<div class="alert alert-danger" role="alert">Ошибка копирования файла из временной директории.</div>';
+	# print  '<div align="center" class="alert alert-danger" role="alert">Файл не загружен! Ранее уже был загружен файл с такой же контрольной суммой.</div>';
+	alert("danger", "Ошибка загрузки. Ранее уже был загружен файл с такой же контрольной суммой");
 }
-
-require_once "footer.php";
 ?>

@@ -13,9 +13,9 @@ function popup_success($email, $date) {
 }
 
 # Display popup if email was NOT sent
-function popup_error($email, $date) {
+function popup_error($email, $date, $exit_code) {
 	$_SESSION['modal_title'] = 'Ошибка генерации Excel файла';
-	$_SESSION['modal_text'] = 'Произошла ошибка при генерации Excel файла. Попробуйте отправить заказ позже.';
+	$_SESSION['modal_text'] = 'Произошла ошибка при генерации Excel файла. Попробуйте отправить заказ позже. Описание ошибки: «' . $exit_code . '»';
 	header("location:menu.php?date=$date");
 }
 
@@ -56,13 +56,13 @@ function send_email($company, $file, $name, $surname, $dates, $user_email, $week
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	$mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
 	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
-	# $mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
+	$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
 	if ($company === 'Адам')
 	{
-		$mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-		# $mail_to = 'aananyev@adalisk.com'; // Debug
+		# $mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
+		$mail_to = 'aananyev@adalisk.com'; // Debug
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
@@ -118,13 +118,13 @@ $date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
 
 # 2. Get ExcelId by Date (Date is equal to date of opened UI tab by User)
 $sql = "SELECT DISTINCT ExcelId FROM $table_food WHERE Date = '$date'";
-print $sql;
+# print $sql;
 $result = $conn->query($sql);
 $excel_id = null;
  while ($row = $result->fetch_assoc()) {
 	$excel_id = $row["ExcelId"];
 }
-print ' Excel ID:' . $excel_id;
+# print ' Excel ID:' . $excel_id;
 
 # 3. Get all Dates by ExcelId
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE ExcelId = '$excel_id'";
@@ -202,42 +202,55 @@ else {
 				unlink($newfile);
 		}
 		
-		// 15. Create new Excel File
-		$excel_id = mb_convert_encoding($excel_id, "Windows-1251");
-		if (!copy($excel_id, $newfile)) {
-			echo "Ошибка копирования файла $excel_id в файл $newfile";
+		# Get Excel File Location
+		$excel_file_location = Null;
+		$sql = "SELECT FileLocation FROM excel WHERE Id = $excel_id";
+		$result = $conn->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$excel_file_location =  $row["FileLocation"];
+		}
+		# print '<br>«' . $excel_file_location . '»</br>';
+		if (!$excel_file_location) {
+			print '<br>Excel файл не найден. Excel Id: ' . $excel_id . '</br>';
 		}
 		else {
-			
-			// 16. Generate Excel File with Python Script
-			$attempts_count = 10;
-			$exit_code = null;
-			$output = array();
-			for ($i = 1; $i <= $attempts_count; $i++) {
-				$exit_code = exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate \"" . $excel_id . "\" " . $user_id . " \"" . $newfile . "\"", $output, $exit_code);
-				error_log('Generate Excel file with Python. SendEmail.php: line 218: $i [attempt]: '. $i . '; ' . '$output: «' . implode(', ', $output) . '»', 0);
-				error_log('Generate Excel file with Python. SendEmail.php: line 219: $i [attempt]: '. $i . '; ' . '$exit_code: «' . $exit_code . '»', 0);
-				if ($exit_code == 'OK') {
-					break;
-				}
-			}
-			
-			if ($exit_code == 'OK') {
-				// 17. Send Email
-				if (file_exists($newfile)) {
-					send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass, $user_id);
-				
-					// 18. Display success popup
-					popup_success($email, $date);
-				}
-				else {
-					print 'Файл "' . $newfile . '" не отправлен! Количество Excel Ids:"' . count($excel_ids) . '"<br>';
-					goto try_again;
-				}
+			// 15. Create new Excel File
+			if (!copy($excel_file_location, $newfile)) {
+				print 'Ошибка копирования файла «' . $excel_file_location . '» в файл «' . $newfile . '»';
 			}
 			else {
-				// 18. Display error popup
-				popup_error($email, $date);
+				
+				// 16. Generate Excel File with Python Script
+				$attempts_count = 10;
+				$exit_code = null;
+				$output = null;
+				for ($i = 1; $i <= $attempts_count; $i++) {
+					$exit_code = exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate " . $excel_id . " " . $user_id . " \"" . $newfile . "\"", $output, $exit_code);
+					error_log("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate " . $excel_id . " " . $user_id . " \"" . $newfile . "\"");
+					error_log('Generate Excel file with Python. SendEmail.php: $i [attempt]: '. $i . '; ' . '$exit_code: «' . $exit_code . '»', 0);
+					error_log('Generate Excel file with Python. SendEmail.php: $i [attempt]: '. $i . '; ' . '$output: «' . implode(', ', $output) . '»', 0);
+					if ($exit_code == 'OK') {
+						break;
+					}
+				}
+				
+				if ($exit_code == 'OK') {
+					// 17. Send Email
+					if (file_exists($newfile)) {
+						send_email($company, $newfile, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass, $user_id);
+					
+						// 18. Display success popup
+						popup_success($email, $date);
+					}
+					else {
+						print 'Файл "' . $newfile . '" не отправлен! Количество Excel Ids:"' . count($excel_ids) . '"<br>';
+						goto try_again;
+					}
+				}
+				else {
+					// 18. Display error popup
+					popup_error($email, $date, $exit_code);
+				}
 			}
 		}
 	}
