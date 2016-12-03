@@ -87,7 +87,7 @@ if ($result->num_rows == 0) {
 		$result = $conn->query($sql);
 		if ($result = $conn->query($sql)) {
 			while ($row = $result->fetch_assoc()) {
-				alert("success", "Файл успешно загружен на сервер!<br>Компания: " . $row["Company"] . '<br>Количество блюд: ' . $row["DishesCount"] . '<br>Количество дней: ' . $row["DaysCount"] . '<br>Даты: ' . $row["DateFirst"] . ' - ' . $row["DateLast"]);
+				alert("success", "Файл успешно загружен на сервер!<br>Компания: " . $row["Company"] . '<br>Количество блюд: ' . $row["DishesCount"] . '<br>Количество дней: ' . $row["DaysCount"] . '<br>Даты:<br>' . str_replace(",", "<br>", $row["Dates"]));
 			}
 		}
 		else {

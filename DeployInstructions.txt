@@ -4,7 +4,15 @@ DEPLOY 2016.12.03 | EXCEL
 
 1. Execute following SQL statement:
 
-CREATE TABLE eda.excel ( Id SMALLINT NOT NULL AUTO_INCREMENT , DateFirst DATE NOT NULL , DateLast DATE NOT NULL , Company TINYTEXT NOT NULL, WeekNumber TINYINT NOT NULL, DaysCount TINYINT NOT NULL , DishesCount SMALLINT NOT NULL, OriginalFileName TINYTEXT NOT NULL , FileLocation TINYTEXT NOT NULL , Checksum TINYTEXT NOT NULL , UploadDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , UploadedBy SMALLINT NOT NULL , PRIMARY KEY (Id)) ENGINE = InnoDB;
+INSERT INTO eda.users (Id, Login, Password, RoleId, Name, Surname, RestorePasswordGUID, ShowNotification, AutofillSetting_AutofillType, AutofillSetting_Company, AutofillSetting_OrderFirstDishes, AutofillSetting_OrderSecondDishes, AutofillSetting_OrderSalads, AutofillSetting_OrderDesserts) VALUES ('2', 'Bot', 'EdaBot', '2', 'Бот', 'Бот', '', '0', '0', '0', '0', '0', '0', '0');
+
+Description: this will add Bot User
+
+2. Backup whole 'xampp' folder
+
+3. Execute following SQL statement:
+
+CREATE TABLE eda.excel ( Id SMALLINT NOT NULL AUTO_INCREMENT , DateFirst DATE NOT NULL , DateLast DATE NOT NULL, Dates TINYTEXT NOT NULL , DaysCount TINYINT NOT NULL , Company TINYTEXT NOT NULL, WeekNumber TINYINT NOT NULL, DishesCount SMALLINT NOT NULL, OriginalFileName TINYTEXT NOT NULL , FileLocation TINYTEXT NOT NULL , Checksum TINYTEXT NOT NULL , UploadDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , UploadedBy SMALLINT NOT NULL , PRIMARY KEY (Id)) ENGINE = InnoDB;
 
 Description: This SQL statement creates table "excel" with the following columns:
 
@@ -13,21 +21,24 @@ Description: This SQL statement creates table "excel" with the following columns
  1 | Id					|	SMALLINT
  2 | DateFirst			|	DATE
  3 | DateLast			|	DATE
- 4 | Company			|	SMALLINT
- 5 | WeekNumber			|	TINYINT
- 6 | DaysCount			|	TINYINT
- 7 | DishesCount		|	SMALLINT
- 8 | OriginalFileName	|	TINYTEXT
- 9 | FileLocation		|	TINYTEXT
-10 | Checksum			|	TINYTEXT
-11 | UploadDate			|	DATETIME
-12 | UploadedBy			|	SMALLINT
+ 4 | Days				|	TINYTEXT
+ 5 | DaysCount			|	TINYINT
+ 6 | Company			|	SMALLINT
+ 7 | WeekNumber			|	TINYINT
+ 8 | DishesCount		|	SMALLINT
+ 9 | OriginalFileName	|	TINYTEXT
+10 | FileLocation		|	TINYTEXT
+11 | Checksum			|	TINYTEXT
+12 | UploadDate			|	DATETIME
+13 | UploadedBy			|	SMALLINT
 
-2. Get latest source code from the GitHub
+4. Get latest source code from the GitHub
  
-3. Copy ParseAndAggregate.cgi to the 'cgi-bin' folder
+5. Copy ParseAndAggregate.cgi to the 'cgi-bin' folder
 
-4. Perform 'Extended Happy Path Test'**
+6. Perform "Evolution_20161203.py"
+
+7. Perform 'Extended Happy Path Test'**
 
 ####################################################################################################
 DEPLOY 2016.11.08 | 

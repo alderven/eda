@@ -166,7 +166,7 @@ print '
 	<tbody>';
 
 
-$sql = "SELECT excel.Id, excel.DateFirst, excel.DateLast, excel.Company, excel.UploadDate, users.Name, users.Surname
+$sql = "SELECT excel.Id, excel.Dates, excel.Company, excel.UploadDate, users.Name, users.Surname
 		FROM excel
 		INNER JOIN users
 		ON excel.UploadedBy = users.Id";
@@ -178,14 +178,14 @@ $result = $conn->query($sql);
 	$dishes_count = ordered_dishes_count($conn, $row["Id"]);
 	
 	print '<tr>
-		<td align="center" width="80">' . $row["DateFirst"] . '<br>-<br>' . $row["DateLast"] . '</td>
-		<td align="right">' . $row["Company"] . '</td>
-		<td align="right">' . $price . '</td>
-		<td align="right">' . $dishes_count . '</td>
-		<td align="right">' . count($customers) . '</td>
-		<td align="right">' . implode("<br>", $customers) . '</td>
-		<td align="right">' . $row["UploadDate"] . '</td>
-		<td align="right">' . $row["Name"] . ' ' . $row["Surname"] . '</td>
+		<td align="center" width="80">' . str_replace(",", "<br>", $row["Dates"]) . '</td>
+		<td align="center">' . $row["Company"] . '</td>
+		<td align="center">' . $price . '</td>
+		<td align="center">' . $dishes_count . '</td>
+		<td align="center">' . count($customers) . '</td>
+		<td align="left">' . implode("<br>", $customers) . '</td>
+		<td align="center">' . $row["UploadDate"] . '</td>
+		<td align="center">' . $row["Name"] . ' ' . $row["Surname"] . '</td>
 		<td class="vert-align"><div align="center"><div class="radio"><label><input type="radio" checked="checked" value="' . $row["Id"] . '"name="ExcelId"></label></div></div></td>
 	</tr>';
  }

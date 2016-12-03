@@ -327,6 +327,7 @@ class Parse:
               'Company="' + Dish.company + '", ' \
               'DateFirst="' + parse_result.dates[0] + '", ' \
               'DateLast="' + parse_result.dates[-1] + '", ' \
+              'Dates="' + ','.join(parse_result.dates)+ '", ' \
               'DaysCount="' + str(len(parse_result.dates)) + '", ' \
               'WeekNumber=' + str(parse_result.week_number) + ', ' \
               'DishesCount=' + str(parse_result.dishes_count) +\
