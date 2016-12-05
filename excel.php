@@ -7,6 +7,11 @@ header("location:index.php");
 }
 require_once "config.php";
 
+# Check for Admin priveleges
+if ($role_id > 1) {
+	header("location:menu.php");
+}
+
 function customers_count($conn, $excel_id) {
 	$sql = "SELECT DISTINCT users.Surname FROM users
 			JOIN orders ON orders.UserId = users.Id

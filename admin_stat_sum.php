@@ -6,6 +6,11 @@ $_SESSION['ReferURL'] = $_SERVER['REQUEST_URI'];
 header("location:index.php");
 }
 require_once "config.php";
+
+# Check for Admin priveleges
+if ($role_id > 1) {
+	header("location:menu.php");
+}
 ?>
 
 <!-- https://datatables.net/ -->

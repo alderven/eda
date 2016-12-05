@@ -5,6 +5,11 @@ header("location:index.php");
 }
 require_once "config.php";
 
+# Check for Admin priveleges
+if ($role_id > 1) {
+	header("location:menu.php");
+}
+
 // Transliterate (for attachment file name)
 function rus2translit($string) {
     $converter = array(
