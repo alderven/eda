@@ -1,4 +1,5 @@
 ﻿####################################################################################################
+DEPLOY 2016.12.07 | MORE INFORMATION ABOUT USER ORDER
 ####################################################################################################
 
 1. Execute following SQL statements:
@@ -6,6 +7,9 @@
 ALTER TABLE orders ADD Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP FIRST;
 ALTER TABLE orders ADD Autofill BOOLEAN NOT NULL DEFAULT FALSE AFTER Count;
 
+Description: this will allow to collect information about order:
+  - date and time
+  - type (manual/autofill)
 
 2. Update Production with the latest source code from GitHub
 
