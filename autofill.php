@@ -171,7 +171,7 @@ else
 
 	# 9. Add selected dishes to the order
 	foreach ($my_order as &$menu_item_id) {
-		$sql = "INSERT INTO $table_orders (UserId, MenuItemId, Count) VALUES ($user_id, $menu_item_id, 1)";
+		$sql = "INSERT INTO $table_orders (UserId, MenuItemId, Count, Autofill) VALUES ($user_id, $menu_item_id, 1, 1)";
 		$result = $conn->query($sql);
 	}
 

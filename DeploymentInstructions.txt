@@ -1,4 +1,15 @@
 ﻿####################################################################################################
+####################################################################################################
+
+1. Execute following SQL statements:
+
+ALTER TABLE orders ADD Date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP FIRST;
+ALTER TABLE orders ADD Autofill BOOLEAN NOT NULL DEFAULT FALSE AFTER Count;
+
+
+2. Update Production with the latest source code from GitHub
+
+####################################################################################################
 DEPLOY 2016.12.03 | EXCEL
 ####################################################################################################
 
