@@ -7,11 +7,53 @@ header("location:index.php");
 require_once "config.php";
 ?>
 
+<style>
+
+.food-table.table>tbody>tr>td {
+	vertical-align: middle;
+	padding: 8px;
+}
+
+.food-counter {
+	width: 20px;
+	height: 20px;
+	background: #f95050;
+	border-radius: 50%;
+	text-align: center;
+	color: white;
+	-webkit-box-shadow: 0 0 1px 1px #af6161;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+	-moz-box-shadow:    0 0 1px 1px #af6161;  /* Firefox 3.5 - 3.6 */
+	box-shadow:         0 0 1px 1px #af6161;
+}
+
+.menu-item-counter {
+	
+}
+
+/*
+.food-table.table {
+	padding: 2px;
+	border-collapse: separate;
+	border-spacing: 0 1px;
+}
+
+.food-table.table>tbody>tr.row-active {
+	outline: 2px solid #eca013;
+}
+*/
+
+
+
+
+</style>
+
 <script>
 angular.module('app', [])
 	.controller('menuCtrl', function($scope, $http) {
 		var vm = this;
 		vm.test = "this is a test";
+		
+		vm.cart = {};
 
 		// Autofill
 		vm.autofill = function() {
@@ -52,6 +94,7 @@ angular.module('app', [])
 			var url = "CalculatePriceSum.php?date=" + date;
 			$http.get(url)
 				.success(function (response) {
+
 					result = JSON.stringify(response);
 					//alert(result);
 					result = JSON.parse(result);
@@ -71,10 +114,17 @@ angular.module('app', [])
 				});
 		};
 		
+		
+		
 		vm.addToCart = function(id, date) {
+			
+			vm.cart[id] = vm.cart[id] ? ++vm.cart[id] : 1;
+			
 			var url = "AddToCart.php?dishId=" + id;
 			$http.post(url)
 				.success(function (response) {
+					
+					$("#menuItemCounter" + id).animateCss('bounceIn');
 					
 					// Update Items Count.
 					document.getElementById("menuItemCount" + id).innerHTML = response;
@@ -93,6 +143,9 @@ angular.module('app', [])
 		};
 		
 		vm.RemoveFromCart = function(id, buttonColour, date, filter) {
+				
+			vm.cart[id] = vm.cart[id] ? --vm.cart[id] : 0;
+			
 			var url = "RemoveFromCart.php?dishId=" + id;
 			$http.post(url)
 				.success(function (itemsCount) {
@@ -312,8 +365,8 @@ print  '<div class="container-fluid">
 					<a href="print.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
-					<form action="SendEmail.php?date=" method="get">
-						<button type="submit" name="date" value="' . $date . '" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
+					<form ng-submit="vm.formSubmitted=true" action="SendEmail.php?date=" method="get">
+						<button ng-disabled="vm.formSubmitted" type="submit" name="date" value="' . $date . '" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
 					</form>
 				</div>
 			</div>
@@ -436,6 +489,7 @@ if ($result->num_rows > 0)
 	print '<table class="table table-hover"
 					<thead>
 						<tr>
+							<th width="30"></th>
 							<th width="100"><div class="text-center">Категория</div></th>
 							<th width="500"><div class="text-center">Блюдо</div></th>
 							<th width="50"><div class="text-center">Вес (гр.)</div></th>
@@ -451,7 +505,7 @@ if ($result->num_rows > 0)
 		print '<div class="scrollit">';
 	}
 	
-	print '<table class="table table-hover"
+	print '<table class="food-table table table-hover">
 					<thead></thead>
 					<tbody>';
 	
@@ -519,13 +573,14 @@ if ($result->num_rows > 0)
 					$itemsCount = $row2["Count"];
 				}
 				
-				print '<tr class="' . $food_table_rows_colours[$i] . '">
+				print '<tr ng-init="vm.cart[' . $row1["Id"] . ']=' . $itemsCount . '" ng-class="{\'row-active\': vm.cart[' . $row1["Id"] . '] > 0}" class="' . $food_table_rows_colours[$i] . '">
+						<td width="35" style="padding:8px 0 0 8px;vertical-align:top;"><div id="menuItemCounter' . $row1["Id"] .  '" ng-show="vm.cart[' . $row1["Id"] . ']>0" class="menu-item-counter ng-cloak food-counter">{{vm.cart[' . $row1["Id"] . ']}}</div></td>
 						<td width="100" align="center">' . $row1["Type"] . '</td>
 						<td width="500">' . $row1["Name"] . '<br>' . $row1["Contain"] . '</td>
 						<td width="50" align="center">' . $row1["Weight"] . '</td>
 						<td width="50" align="center">' . $row1["Price"] . '</td>
 						<td width="100" align="center">' . $row1["Company"] . '</td>
-						<td width="80" align="center"><button ng-click="vm.addToCart(' . $row1["Id"] . ', \'' . $paging_date . '\')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-plus"></span></button> <button id="minus' . $row1["Id"] .  '" ng-click="vm.RemoveFromCart(' . $row1["Id"] .  ', ' . $food_table_rows_colours[$i] . ', \'' . $paging_date . '\', \'' . $filter . '\')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-minus"></span></button><p id="menuItemCount' . $row1["Id"] .  '" class="text-muted">' . $itemsCount .  '</p></td>
+						<td width="80" align="center"><button ng-click="vm.addToCart(' . $row1["Id"] . ', \'' . $paging_date . '\')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-plus"></span></button> <button id="minus' . $row1["Id"] .  '" ng-click="vm.RemoveFromCart(' . $row1["Id"] .  ', ' . $food_table_rows_colours[$i] . ', \'' . $paging_date . '\', \'' . $filter . '\')" type="submit" name="' . $row1["Id"] .  '" value="' . $row1["Id"] .  '" class="btn btn btn-' . $food_table_rows_colours[$i] . ' btn-xs"><span class="glyphicon glyphicon-minus"></span></button><p style="margin:0;" id="menuItemCount' . $row1["Id"] .  '" class="text-muted">' . $itemsCount .  '</p></td>
 					  </tr>';
 		
 				$previous_food_type = $row1["Type"];

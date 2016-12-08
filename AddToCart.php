@@ -1,5 +1,4 @@
 <?php
-require_once "header.php";
 session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
