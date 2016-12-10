@@ -5,6 +5,7 @@ if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
 require_once "config.php";
+require_once "common.php";
 ?>
 
 <style>
@@ -26,9 +27,7 @@ require_once "config.php";
 	box-shadow:         0 0 1px 1px #af6161;
 }
 
-.menu-item-counter {
-	
-}
+
 
 /*
 .food-table.table {
@@ -289,6 +288,7 @@ if ($showNotification == 1) {
 
 # 5. Get Current Page Date.
 $date = isset($_GET['date']) ? $_GET['date'] : '';
+error_log('menu.php: date: ' . $date, 0);
 
 # 6. Check, if Filter by Order applied.
 $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
@@ -365,8 +365,9 @@ print  '<div class="container-fluid">
 					<a href="print.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
-					<form ng-submit="vm.formSubmitted=true" action="SendEmail.php?date=" method="get">
-						<button ng-disabled="vm.formSubmitted" type="submit" name="date" value="' . $date . '" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
+					<form ng-submit="excelSubmitted=true" action="SendEmail.php" method="get">
+						<input type="hidden" name="date" value="' . $date . '"/>
+						<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
 					</form>
 				</div>
 			</div>
@@ -412,24 +413,7 @@ if ($result->num_rows > 0)
 			$sum = 0;
 		}
 		
-		$dayofweek = date('w', strtotime($row["Date"]));
-		if($dayofweek == 1) {
-			$dayofweek = 'Понедельник';
-		} elseif($dayofweek == 2) {
-			$dayofweek = 'Вторник';
-		} elseif($dayofweek == 3) {
-			$dayofweek = 'Среда';
-		} elseif($dayofweek == 4) {
-			$dayofweek = 'Четверг';
-		} elseif($dayofweek == 5) {
-			$dayofweek = 'Пятница';
-		} elseif($dayofweek == 6) {
-			$dayofweek = 'Суббота';
-		} elseif($dayofweek == 7) {
-			$dayofweek = 'Воскресенье';
-		} else {
-			$dayofweek = '';
-		};
+		$dayofweek = day_of_week($row["Date"]);
 		
 		# 11.2. Add Pagination Splitter if new week is started.
 		$dayofweek_dgt = date('w', strtotime($row["Date"]));
@@ -574,7 +558,8 @@ if ($result->num_rows > 0)
 				}
 				
 				print '<tr ng-init="vm.cart[' . $row1["Id"] . ']=' . $itemsCount . '" ng-class="{\'row-active\': vm.cart[' . $row1["Id"] . '] > 0}" class="' . $food_table_rows_colours[$i] . '">
-						<td width="35" style="padding:8px 0 0 8px;vertical-align:top;"><div id="menuItemCounter' . $row1["Id"] .  '" ng-show="vm.cart[' . $row1["Id"] . ']>0" class="menu-item-counter ng-cloak food-counter">{{vm.cart[' . $row1["Id"] . ']}}</div></td>
+						<td width="35" style="padding:8px 0 0 8px;vertical-align:top;"><div id="menuItemCounter' . $row1["Id"] .  '" ng-show="vm.cart[' . $row1["Id"] . ']>0 && \''.$filter.'\'!==
+						\'filtered\'" class="menu-item-counter ng-cloak food-counter">{{vm.cart[' . $row1["Id"] . ']}}</div></td>
 						<td width="100" align="center">' . $row1["Type"] . '</td>
 						<td width="500">' . $row1["Name"] . '<br>' . $row1["Contain"] . '</td>
 						<td width="50" align="center">' . $row1["Weight"] . '</td>

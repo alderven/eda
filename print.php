@@ -29,18 +29,18 @@ if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
 require_once "config.php";
+require_once "common.php";
 
 
-$sql = "SELECT $table_food.Company, $table_food.Date, $table_food.Name, $table_users.Name as UserName, $table_users.Surname, $table_orders.Count
-		FROM $table_users
-			JOIN $table_orders
-				ON $table_orders.UserId = $table_users.Id
-			JOIN $table_food
-				ON $table_food.Id = $table_orders.MenuItemId
-		WHERE $table_orders.UserId = $user_id
-		AND Date >= CURDATE()
-		ORDER BY Date";
-
+$sql = "SELECT food.Company, food.Date, food.Name, users.Name as UserName, users.Surname, orders.Count
+		FROM users
+		JOIN orders
+		ON orders.UserId = users.Id
+		JOIN food ON food.Id = orders.MenuItemId
+		WHERE orders.UserId = $user_id
+		AND food.Date >= CURDATE()
+		ORDER BY food.Date";
+		
 if ($result = $conn->query($sql)) {
 	
 	if ($result->num_rows > 0) {
@@ -60,24 +60,7 @@ if ($result = $conn->query($sql)) {
 						
 			if ($previous_date != $row["Date"]) {
 				
-				$dayofweek = date('w', strtotime($row["Date"]));
-				if($dayofweek == 1) {
-					$dayofweek = 'Понедельник';
-				} elseif($dayofweek == 2) {
-					$dayofweek = 'Вторник';
-				} elseif($dayofweek == 3) {
-					$dayofweek = 'Среда';
-				} elseif($dayofweek == 4) {
-					$dayofweek = 'Четверг';
-				} elseif($dayofweek == 5) {
-					$dayofweek = 'Пятница';
-				} elseif($dayofweek == 6) {
-					$dayofweek = 'Суббота';
-				} elseif($dayofweek == 7) {
-					$dayofweek = 'Воскресенье';
-				} else {
-					$dayofweek = '';
-				};
+				$dayofweek = day_of_week($row["Date"]);
 				
 				$months = array( '', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря' );
 				$month = $months[date("m", strtotime($row["Date"]))];

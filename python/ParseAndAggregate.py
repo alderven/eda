@@ -461,6 +461,7 @@ class Aggregate:
         log('6. Open Excel file: ' + new_file)
         new_file_name_without_path = os.path.basename(new_file)
         new_file_win_path = upload_folder + new_file_name_without_path
+        wb = None
         try:
             wb = excel.Workbooks.Open(new_file_win_path)
         except Exception as e:
@@ -470,7 +471,6 @@ class Aggregate:
         # 7. Get the cell locations and values from DB
         log('7. Get the cell locations and values from DB')
         i = 0
-        wb = None
         while i < len(menu_item_ids):
             sql = 'SELECT SheetIndex, CellRow, CellColumn FROM eda.food WHERE Id = ' + str(menu_item_ids[i]) + ' AND ExcelId = "' + excel_id + '"'
             result = DB.read(sql, cur)
@@ -488,7 +488,7 @@ class Aggregate:
                     ws.Cells(cell_row, cell_column).Value = str(total_count[i])
                 except Exception as e:
                     log('Error. Unable to write to Excel')
-                    log('Error arguments: ' + e.args)
+                    log('Error arguments: ' + e.args[0])
             i += 1
 
         # 9. Disable check compatibility
@@ -519,6 +519,7 @@ class Aggregate:
         os.system("taskkill /f /im EXCEL.EXE")  # In case if previous process not finished
         log('=> Excel saving completed')
         log('...completed')
+        print('OK')
 
     @staticmethod
     def save_excel(wb, excel_file_name, excel):
@@ -582,19 +583,19 @@ def main():
     if len(sys.argv) == 4 and sys.argv[1] == 'parse':
         Parse.main(conn, cur, sys.argv[2], sys.argv[3])
     elif len(sys.argv) == 5 and sys.argv[1] == 'aggregate':
-    
-        # Get Excel Id
-        excel_id = sys.argv[2]
         if sys.argv[2] == 'all':
             excel_id = sys.argv[3]
-
-        if sys.argv[2] == 'all':
-            new_file = sys.argv[4]
-            Aggregate.for_all_users(cur, excel_id, new_file)
+            new_file_name = sys.argv[4]
+            Aggregate.for_all_users(cur, excel_id, new_file_name)
         else:
-            Aggregate.for_one_user(cur, excel_id, sys.argv[3], sys.argv[4])
+            excel_id = sys.argv[2]
+            user_id = sys.argv[3]
+            new_file_name = sys.argv[4]
+            Aggregate.for_one_user(cur, excel_id, user_id, new_file_name)
     else:
         log('Warning! Arguments not fit')
+
+    conn.close()
     
     conn.close()
 ########################################################################################################################

@@ -4,11 +4,10 @@ if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
 }
 require_once "config.php";
+require_once "common.php";
 
 # Check for Admin priveleges
-if ($role_id > 1) {
-	header("location:menu.php");
-}
+is_admin($role_id);
 
 // Transliterate (for attachment file name)
 function rus2translit($string) {
@@ -40,13 +39,6 @@ function rus2translit($string) {
     return strtr($string, $converter);
 }
 
-# Display Alert on Excel Page
-function alert($type, $text) {
-	$_SESSION['alert_type'] = $type;
-	$_SESSION['alert_text'] = $text;
-	header("location:excel.php");
-}
-
 # Get Temp File lolocation
 $file_tmp_location = $_FILES['uploadfile']['tmp_name'];
 
@@ -64,8 +56,7 @@ if ($result->num_rows == 0) {
 	$uploadfile_trnslt = rus2translit($uploadfile_cyr);
 	$uploadfile = str_replace('.xls', '', $uploadfile_trnslt) . '_' .  date('YmdHis') . '.xls';
 	if (filesize($_FILES['uploadfile']['tmp_name']) == 0) {
-		# print '<div class="alert alert-danger" role="alert">Вы пытаетесь загрузить пустой файл.</div>';
-		alert("danger", "Ошибка загрузки Excel файла. Вы пытаетесь загрузить пустой файл");
+		alert("danger", "Ошибка загрузки Excel файла. Вы пытаетесь загрузить пустой файл", "excel.php");
 	}
 
 	// Копируем файл из каталога для временного хранения файлов:
@@ -92,21 +83,18 @@ if ($result->num_rows == 0) {
 		$result = $conn->query($sql);
 		if ($result = $conn->query($sql)) {
 			while ($row = $result->fetch_assoc()) {
-				alert("success", "Файл успешно загружен на сервер!<br>Компания: " . $row["Company"] . '<br>Количество блюд: ' . $row["DishesCount"] . '<br>Количество дней: ' . $row["DaysCount"] . '<br>Даты:<br>' . str_replace(",", "<br>", $row["Dates"]));
+				alert("success", "Файл успешно загружен на сервер!<br>Компания: " . $row["Company"] . '<br>Количество блюд: ' . $row["DishesCount"] . '<br>Количество дней: ' . $row["DaysCount"] . '<br>Даты:<br>' . str_replace(",", "<br>", $row["Dates"]), "excel.php");
 			}
 		}
 		else {
-			# print '<div class="alert alert-danger" role="alert">В базе данных не обнаружено новых блюд.</div>';
-			alert("danger", "Ошибка. В базе данных не обнаружено новых блюд");
+			alert("danger", "Ошибка. В базе данных не обнаружено новых блюд", "excel.php");
 		}
 	}
 	else {
-		# print '<div class="alert alert-danger" role="alert">Ошибка копирования файла из временной директории.</div>';
-		alert("danger", "Ошибка копирования файла из временной директории");
+		alert("danger", "Ошибка копирования файла из временной директории", "excel.php");
 	}
 }
 else {
-	# print  '<div align="center" class="alert alert-danger" role="alert">Файл не загружен! Ранее уже был загружен файл с такой же контрольной суммой.</div>';
-	alert("danger", "Ошибка загрузки. Ранее уже был загружен файл с такой же контрольной суммой");
+	alert("danger", "Ошибка загрузки. Ранее уже был загружен файл с такой же контрольной суммой", "excel.php");
 }
 ?>

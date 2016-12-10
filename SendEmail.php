@@ -115,6 +115,7 @@ try_again:
 
 # 1. Get Date
 $date = ($_GET['date'] != '') ? $_GET['date'] : date("Y-m-d");
+error_log('SendEmail: Get Date: ' . $date, 0);
 
 # 2. Get ExcelId by Date (Date is equal to date of opened UI tab by User)
 $sql = "SELECT DISTINCT ExcelId FROM $table_food WHERE Date = '$date'";
@@ -123,6 +124,7 @@ $result = $conn->query($sql);
 $excel_id = null;
  while ($row = $result->fetch_assoc()) {
 	$excel_id = $row["ExcelId"];
+	error_log('SendEmail: Excel Id: ' . $excel_id, 0);
 }
 # print ' Excel ID:' . $excel_id;
 
@@ -132,6 +134,7 @@ $result = $conn->query($sql);
 $dates = '';
  while ($row = $result->fetch_assoc()) {
 	$dates .= '"' . $row["Date"] . '", ';
+	error_log('SendEmail: Date: ' . $row["Date"], 0);
 }
 $dates = trim($dates); # remove space at the end of string
 $dates = trim($dates, ",");  # remove comma at the end of string

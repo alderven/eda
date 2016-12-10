@@ -6,11 +6,10 @@ $_SESSION['ReferURL'] = $_SERVER['REQUEST_URI'];
 header("location:index.php");
 }
 require_once "config.php";
+require_once "common.php";
 
 # Check for Admin priveleges
-if ($role_id > 1) {
-	header("location:menu.php");
-}
+is_admin($role_id);
 
 function customers_count($conn, $excel_id) {
 	$sql = "SELECT DISTINCT users.Surname FROM users
@@ -26,18 +25,23 @@ function customers_count($conn, $excel_id) {
 	return $customers;
 }
 
-function ordered_dishes_count($conn, $excel_id) {
-	$sql = "SELECT SUM(orders.Count) as Sum FROM orders
-			INNER JOIN food
-			ON food.Id = orders.MenuItemId
-			WHERE food.ExcelId = $excel_id";
+function autofill_users($conn, $excel_id) {
+	$sql = "SELECT DISTINCT users.Surname FROM users
+			INNER JOIN orders
+			ON users.Id = orders.UserId
+            INNER JOIN food
+            ON food.Id = orders.MenuItemId
+            INNER JOIN excel
+            ON food.ExcelId = excel.Id
+			WHERE orders.Autofill = 1 AND
+            excel.Id = $excel_id";
 	$result = $conn->query($sql);
-	$dishes_count = 0;
+	$users = array();
 	while ($row = $result->fetch_assoc()) {
-		$dishes_count = $row["Sum"];
+		array_push($users, $row["Surname"]);
 	}
 	
-	return $dishes_count;
+	return $users;
 }
 
 function total_price($conn, $excel_id) {
@@ -72,7 +76,7 @@ $(document).ready(function() {
 } );
 </script>
 
-<body ng-app="app" ng-controller="menuCtrl as vm">
+<body ng-app="app" ng-controller="Excel as vm">
 <div class="container">
 
 <?php
@@ -82,7 +86,6 @@ print $navigationBar;
 print '<div align="center"><h1>Управление Excel файлами</h1></div><br><br>';
 
 # 2. Display Upload Excel status
-# print $_SESSION['alert_type'] . $_SESSION['alert_text'];
 if (isset($_SESSION['alert_type']) and isset($_SESSION['alert_text'])) {
 	print '<div align="center" class="alert alert-' . $_SESSION['alert_type'] . '">' . $_SESSION['alert_text'] . '</div>';
 	unset($_SESSION['alert_type']);
@@ -123,18 +126,20 @@ print '
 		
 	</div>
 	
-	<form action="download_aggregated_excel.php" target="_blank" method="post">
+	<form ng-submit="downloadExcel=true" action="download.php" method="post">
 	
 	<div class="col-sm-3" align="center">
-		<button type="submit" name="excel_file" class="btn btn-primary" disabled><span class="glyphicon glyphicon-cloud-download"></span> Скачать агрегированный Excel</button>
+		<input type="hidden" name="ExcelId"/>
+		<button ng-disabled="downloadExcel" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-cloud-download"></span> Скачать агрегированный Excel</button>
 	</div>
 	
 	<div class="col-sm-3" align="center">
-		<button type="submit" formaction="ludmila.php" name="excel_file" class="btn btn-primary" disabled><span class="glyphicon glyphicon-print"></span> Распечатка для Людмилы</button>
+		<input type="hidden" name="ExcelId"/>
+		<button type="submit" formaction="ludmila.php" name="ExcelId" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span> Распечатка для Людмилы</button>
 	</div>
 	
 	<div class="col-sm-3" align="center">
-		<button type="submit" formaction="excel_delete.php" name="excel_file" class="btn btn-danger" disabled><span class="glyphicon glyphicon-trash"></span> Удалить Excel</button>
+		<button type="submit" formaction="excel_delete.php" name="ExcelId" class="btn btn-danger" disabled><span class="glyphicon glyphicon-trash"></span> Удалить Excel</button>
 	</div>
 	
 <br><br><hr>';
@@ -150,6 +155,7 @@ print '
 			<th><div align="center">Всего блюд заказано</div></th>
 			<th><div align="center">Количество заказчиков</div></th>
 			<th><div align="center">Заказчики</div></th>
+			<th><div align="center">Пользователи автозаполнения</div></th>
 			<th><div align="center">Дата загрузки файла</div></th>
 			<th><div align="center">Загрузчик файла</div></th>
 			<th><div align="center">Выбор файла</div></th>
@@ -163,6 +169,7 @@ print '
 			<th><div align="center">Всего блюд заказано</div></th>
 			<th><div align="center">Количество заказчиков</div></th>
 			<th><div align="center">Заказчики</div></th>
+			<th><div align="center">Пользователи автозаполнения</div></th>
 			<th><div align="center">Дата загрузки файла</div></th>
 			<th><div align="center">Загрузчик файла</div></th>
 			<th><div align="center">Выбор файла</div></th>
@@ -174,13 +181,16 @@ print '
 $sql = "SELECT excel.Id, excel.Dates, excel.Company, excel.UploadDate, users.Name, users.Surname
 		FROM excel
 		INNER JOIN users
-		ON excel.UploadedBy = users.Id";
+		ON excel.UploadedBy = users.Id
+		ORDER BY excel.DateLast DESC
+		LIMIT 10";
 $result = $conn->query($sql);
  while ($row = $result->fetch_assoc()) {
 	
 	$price = total_price($conn, $row["Id"]);
-	$customers = customers_count($conn, $row["Id"]);
 	$dishes_count = ordered_dishes_count($conn, $row["Id"]);
+	$customers = customers_count($conn, $row["Id"]);
+	$autofill_users = autofill_users($conn, $row["Id"]);
 	
 	print '<tr>
 		<td align="center" width="80">' . str_replace(",", "<br>", $row["Dates"]) . '</td>
@@ -189,6 +199,7 @@ $result = $conn->query($sql);
 		<td align="center">' . $dishes_count . '</td>
 		<td align="center">' . count($customers) . '</td>
 		<td align="left">' . implode("<br>", $customers) . '</td>
+		<td align="left">' . implode("<br>", $autofill_users) . '</td>
 		<td align="center">' . $row["UploadDate"] . '</td>
 		<td align="center">' . $row["Name"] . ' ' . $row["Surname"] . '</td>
 		<td class="vert-align"><div align="center"><div class="radio"><label><input type="radio" checked="checked" value="' . $row["Id"] . '"name="ExcelId"></label></div></div></td>
