@@ -70,7 +70,7 @@ print '<div align="center"><h1>Настройка ручного фильтра<
 
 // 3. Create Table according to the Custom Filters
 // 3.1 Create 'Left' table
-print '<ul align="center" id="enabled_1" class="connectedSortable">
+print '<div style="display:flex;flex-direction:row;"><ul style="height:100%" align="center" id="enabled_1" class="connectedSortable">
 <li class="ui-state-disabled"><h2><b>Фильтр</b></h2>
 	<h5>- Отсортируйте категории блюд по приоритету<br>- Отправьте ненужные в корзину</h5></li>';
 $sql = "SELECT FoodType, Company FROM $table_filters WHERE UserId = $user_id AND Enabled = 1 ORDER BY Priority ASC";
@@ -81,7 +81,7 @@ $result = $conn->query($sql);
 print '</ul>';
 
 // 3.2 Create 'Trash' table
-print '<ul align="center" id="enabled_0" class="connectedSortable">
+print '<ul style="height:100%" align="center" id="enabled_0" class="connectedSortable">
 <li class="ui-state-disabled"><h2><b>Корзина</b></h2>
 	<h5>- Перетащите сюда категории блюд, которые вы не хотите заказывать</h5></li>';
 $sql = "SELECT * FROM $table_filters WHERE UserId = $user_id AND Enabled = 0 ORDER BY Priority ASC";
@@ -89,7 +89,7 @@ $result = $conn->query($sql);
  while ($row = $result->fetch_assoc()) {
 	 print '<li id="' . $row["FoodType"] . '|' . $row["Company"] . '" class="ui-state-default">' . $row["FoodType"] . ' (' . $row["Company"] . ')</li>';
 }
-print '</ul>';
+print '</ul></div>';
 
 // 4. Close DB connection
 $conn->close();

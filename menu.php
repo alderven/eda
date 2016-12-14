@@ -476,10 +476,10 @@ if ($result->num_rows > 0)
 							<th width="30"></th>
 							<th width="100"><div class="text-center">Категория</div></th>
 							<th width="500"><div class="text-center">Блюдо</div></th>
-							<th width="50"><div class="text-center">Вес (гр.)</div></th>
-							<th width="50"><div class="text-center">Цена (р.)</div></th>
+							<th width="60"><div class="text-center">Вес (гр.)</div></th>
+							<th width="65"><div class="text-center">Цена (р.)</div></th>
 							<th width="100"><div class="text-center">Поставщик</div></th>
-							<th width="80"><div class="text-center">Добавить / удалить</div></th>
+							<th width="50"><div class="text-center">Добавить / удалить</div></th>
 						</tr>
 					</thead>
 					<tbody><tbody></table>';

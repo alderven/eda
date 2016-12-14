@@ -78,7 +78,7 @@ if(isset($_SESSION['myusername'])) {
 
 	# 4. Define Navigation Bar
 	$navigationBar = '
-	<div class="container">
+	<div class="flex-container container">
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 			  <div class="navbar-header">

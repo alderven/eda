@@ -1,7 +1,7 @@
-		<div class="navbar-fixed-bottom row-fluid">
+		<div class="footer navbar-fixed-bottom row-fluid">
 			<div class="navbar-inner">
 				<div class="container">
-					<div class="row logo-font" style="border-top: 1px solid; border-color: #ccc">
+					<div class="row logo-font" style=" border-color: #ccc">
 						<div class="text-center">
 							<span class="text-muted">
 								<span class="glyphicon glyphicon-cutlery"></span>

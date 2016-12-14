@@ -14,45 +14,46 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/locale/bootstrap-table-zh-CN.min.js"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet">
+  
+  
   <style>
 .table tbody>tr>td.vert-align{
     vertical-align: middle;
 }
 
+html, body {
+	height: 100%;
+}
+
+body {
+	font: 14px "Trebuchet MS";
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.footer {
+	padding: 8px 0;
+	background: #f2f2f2;
+    border-top: 1px solid #e4e4e4;
+}
+
+.flex-container {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 50px;
+}
+
+h1 {
+	margin: 10px 0;
+}
+
 .scrollit {
-	table-layout: fixed;
-    overflow-y:scroll;
-	overflow-x: hidden;
-    height:63vh;
-}
-
-
-.layout-column > .flex {
-    min-height: 0;
-}
-.layout-row {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
-    flex-direction: row;
-}
-.flex {
-    -webkit-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-    box-sizing: border-box;
-}
-.layout-column {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-}
-.layout, .layout-column, .layout-row {
-    box-sizing: border-box;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
+	overflow: auto;
+	-webkit-box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.67);
+	-moz-box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.67);
+	box-shadow: 0px 3px 10px 0px rgba(0,0,0,0.67);
 }
 </style>
 </head>

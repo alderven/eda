@@ -15,7 +15,7 @@ print $navigationBar;
 
 <!-- Page title -->
 <div align="center"><h1>Что нового?</h1></div>
-
+<div>
 <!-- Update 30.10.2016-->
 <div><h3><table class="table"><tr class="info"><td align="center">Версия от 30.10.2016</td></tr></tbody></table></h3></div>
 На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
@@ -58,6 +58,7 @@ print $navigationBar;
 <p>Статистика находится в разделе: «Статистика» → «Любимые блюда».</p>
 <p>Перейти к статистике <a href="stat_favorite_dishes.php" target="_blank">сейчас</a>.</p>
 <hr>
+</div>
  <?php
 require_once "footer.php";
  ?>
