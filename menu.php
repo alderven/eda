@@ -15,31 +15,11 @@ require_once "common.php";
 	padding: 8px;
 }
 
-.food-counter {
-	width: 20px;
-	height: 20px;
-	background: #f95050;
-	border-radius: 50%;
-	text-align: center;
-	color: white;
-	-webkit-box-shadow: 0 0 1px 1px #af6161;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-	-moz-box-shadow:    0 0 1px 1px #af6161;  /* Firefox 3.5 - 3.6 */
-	box-shadow:         0 0 1px 1px #af6161;
+.food-c {
+	color: #d43f3a;
+	font-size: 18px;
 }
 
-
-
-/*
-.food-table.table {
-	padding: 2px;
-	border-collapse: separate;
-	border-spacing: 0 1px;
-}
-
-.food-table.table>tbody>tr.row-active {
-	outline: 2px solid #eca013;
-}
-*/
 
 
 
@@ -559,7 +539,7 @@ if ($result->num_rows > 0)
 				
 				print '<tr ng-init="vm.cart[' . $row1["Id"] . ']=' . $itemsCount . '" ng-class="{\'row-active\': vm.cart[' . $row1["Id"] . '] > 0}" class="' . $food_table_rows_colours[$i] . '">
 						<td width="35" style="padding:8px 0 0 8px;vertical-align:top;"><div id="menuItemCounter' . $row1["Id"] .  '" ng-show="vm.cart[' . $row1["Id"] . ']>0 && \''.$filter.'\'!==
-						\'filtered\'" class="menu-item-counter ng-cloak food-counter">{{vm.cart[' . $row1["Id"] . ']}}</div></td>
+						\'filtered\'" class="fa fa-check menu-item-counter ng-cloak food-c"></div></td>
 						<td width="100" align="center">' . $row1["Type"] . '</td>
 						<td width="500">' . $row1["Name"] . '<br>' . $row1["Contain"] . '</td>
 						<td width="50" align="center">' . $row1["Weight"] . '</td>

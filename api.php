@@ -28,6 +28,47 @@ print $navigationBar;
 
 <table class="table">
   <tr>
+    <td colspan="2"><div align="center"><h3>Получение полного меню</h3></div></td>
+  </tr>
+  <tr class="warning">
+    <td width="200"><div align="center"><h4>Тип запроса:</h4></div></td>
+    <td><h4>GET</p></h4></td>
+  </tr>
+  <tr class="info">
+    <td><div align="center"><h4>URL запроса:</h4></div></td>
+
+<?php
+print '<td><h4><a href="' . $site_url . 'api/menu_all.php" target="_blank">' . $site_url . 'api/menu_all.php</a>';
+?>
+
+    </p></h4></td>
+  </tr>
+  <tr class="success">
+    <td><div align="center"><h4>Пример ответа:</h4></div></td>
+    <td><h4><pre><code>[{
+		"Id" : "93210",
+		"Date" : "2016-12-14",
+		"Type" : "Салаты",
+		"Name" : "Костер (свекла, морковь, зел.горошек, яблоки)",
+		"Weight" : "120.0",
+		"Price" : "40",
+		"Company" : "Цимус"
+	}, {
+		"Id" : "93211",
+		"Date" : "2016-12-14",
+		"Type" : "Салаты",
+		"Name" : "Капуста гурийская",
+		"Weight" : "100.0",
+		"Price" : "35",
+		"Company" : "Цимус"
+	}
+]
+</code></pre></h4></td>
+  </tr>
+</table>
+
+<table class="table">
+  <tr>
     <td colspan="2"><div align="center"><h3>Получение заполненного пользователем меню</h3></div></td>
   </tr>
   <tr class="warning">
@@ -65,6 +106,30 @@ print '<td><h4><a href="' . $site_url . 'api/menu.php" target="_blank">' . $site
 </code></pre></h4></td>
   </tr>
 </table>
+
+<table class="table">
+  <tr>
+    <td colspan="2"><div align="center"><h3>Заказ блюда</h3></div></td>
+  </tr>
+  <tr class="warning">
+    <td width="200"><div align="center"><h4>Тип запроса:</h4></div></td>
+    <td><h4>POST</p></h4></td>
+  </tr>
+  <tr class="info">
+    <td><div align="center"><h4>URL запроса:</h4></div></td>
+
+<?php
+print '<td><h4><a href="' . $site_url . 'api/order.php" target="_blank">' . $site_url . 'api/order.php</a>';
+?>
+
+    </p></h4></td>
+  </tr>
+  <tr class="success">
+    <td><div align="center"><h4>Тело запроса</h4></div></td>
+    <td><h4><pre><code>{"dishId": 100000}</code></pre></h4></td>
+  </tr>
+</table>
+
  <?php
 require_once "footer.php";
  ?>
