@@ -6,7 +6,6 @@ require_once "config.php";
 // Define User settings
 $myusername=strtolower($_POST['myusername']); 
 $mypassword=$_POST['mypassword'];
-$refer_url= $_SESSION['ReferURL'];
 
 // To protect MySQL injection
 $myusername = stripslashes($myusername);
@@ -23,20 +22,18 @@ $count=mysqli_num_rows($result);
 if($count==1){
 
 	// Register $myusername, $mypassword and redirect to file "menu.php"
-	session_start();
 	$_SESSION['myusername'] = $myusername;
 	$_SESSION['mypassword'] = $mypassword;
 
-	if($mypassword === "12345") {
-		$_SESSION['errorMessage'] = 'Ваш текущий пароль очень простой. Пожалуйста, смените его на более сложный.';
-		header("location:change_password.php");
-		# $_SESSION['loginError'] = 'Ваш текущий пароль был сброшен в целях повышения безопасности. Пожалуйста, смените пароль, воспользовавшись формой "Забыли пароль?"';
-		# header("location:index.php");
+	$refer_url = null;
+	$sql = "SELECT MenuFilter FROM users WHERE Login = \"$myusername\"";
+	# print $sql;
+	$result = $conn->query($sql);
+	while ($row = $result->fetch_assoc()) {
+		$refer_url = $row["MenuFilter"];
 	}
-	else {
-		#header("location:menu.php");
-		header("location:$refer_url");
-	}
+	$refer_url = $refer_url == '' ? 'menu.php' : $refer_url;
+	header("location:$refer_url");
 }
 else {
 	$_SESSION['loginError'] = 'Некорректный адрес электронной почты и/или пароль';

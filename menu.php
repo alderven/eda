@@ -188,7 +188,17 @@ $(document).ready(function(){
 
   </div>
 </div>
+
 <?php
+
+####################################################################################################
+# Save current Menu filter
+$menu_filter = $_SERVER['REQUEST_URI'];
+
+$sql = "UPDATE users SET MenuFilter = \"$menu_filter\" WHERE Id = $user_id";
+$result = $conn->query($sql);
+####################################################################################################
+
 
 # 1. Display Navigation Bar
 print $navigationBar;

@@ -2,7 +2,6 @@
 require_once "header.php";
 session_start();
 if(!isset($_SESSION['myusername'])) {
-$_SESSION['ReferURL'] = $_SERVER['REQUEST_URI'];
 header("location:index.php");
 }
 require_once "config.php";

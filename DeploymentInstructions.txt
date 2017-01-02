@@ -1,4 +1,20 @@
 ﻿####################################################################################################
+DEPLOY 2017.01.02 | REMEMBER LATEST PAGE
+####################################################################################################
+
+1. Execute following SQL statements:
+
+ALTER TABLE users ADD MenuFilter TINYTEXT NOT NULL AFTER Surname;
+
+Discription: this will add new column 'MenuFilter' to the 'users' table
+
+2. Update Production with the latest source code from GitHub
+
+3. Perform 'Happy Path Test'
+
+4. Switch emails in 'SendEmail.php' to Release
+
+####################################################################################################
 DEPLOY 2016.12.07 | MORE INFORMATION ABOUT USER ORDER
 ####################################################################################################
 

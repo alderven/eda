@@ -46,8 +46,6 @@ require_once "header.php";
 
 $sum = orders_sum();
 
-$_SESSION['ReferURL']= isset($_SESSION['ReferURL']) ? $_SESSION['ReferURL'] : 'menu.php';
-
 print '
 <head>
 	<link href="signin.css" rel="stylesheet">
@@ -63,7 +61,6 @@ print '
 			<input type="password" name="mypassword" id="inputPassword" class="form-control" placeholder="Пароль" required>
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
 			<div align="right"><a href="ForgotPassword.php">Забыли пароль?</a></div>
-			<input type="hidden" value="' . $_SESSION['ReferURL'] . '" name="ReferURL" />
 		</form>';
 
 if (isset($_SESSION['loginError'])) {

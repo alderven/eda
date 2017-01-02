@@ -29,6 +29,12 @@ function alert($type, $text, $location) {
 	exit();
 }
 
+function modal($title, $text, $location) {
+	$_SESSION['modal_title'] = $title;
+	$_SESSION['modal_text'] = $text;
+	header("location:$location");
+}
+
 function day_of_week($date) {
 
 	$dayofweek = date('w', strtotime($date));

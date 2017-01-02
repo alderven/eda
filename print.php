@@ -1,27 +1,3 @@
-<style>
-ul.leaders {
-    max-width: 45em;
-    padding: 0;
-    overflow-x: hidden;
-    list-style: none}
-ul.leaders li:before {
-    float: left;
-    width: 0;
-    white-space: nowrap;
-    content:
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "
- ". . . . . . . . . . . . . . . . . . . . "}
-ul.leaders span:first-child {
-    padding-right: 0.33em;
-    background: white}
-ul.leaders span + span {
-    float: right;
-    padding-left: 0.33em;
-    background: white}
-</style>
-
 <?php
 require_once "header.php";
 session_start();
@@ -54,7 +30,7 @@ if ($result = $conn->query($sql)) {
 		while ($row = $result->fetch_assoc()) {
 			
 			if ($flag) {
-				print '<html><body><h1>' . $row["UserName"] . ' ' . $row["Surname"] . '</h1>';
+				print '<html><body style="align-items:flex-start;"><h1>' . $row["UserName"] . ' ' . $row["Surname"] . '</h1>';
 				$flag = false;
 			}
 						
@@ -63,12 +39,12 @@ if ($result = $conn->query($sql)) {
 				$dayofweek = day_of_week($row["Date"]);
 				
 				$months = array( '', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря' );
-				$month = $months[date("m", strtotime($row["Date"]))];
+				$month = $months[intval(date("m", strtotime($row["Date"])))];
 				
 				
 				print '<br><h4><b>' . $dayofweek . ' ' . date("d", strtotime($row["Date"])) . ' ' . $month . '</b></h4>';
 			}
-			print '<ul class=leaders><li><span>' . $row["Name"] . ' (' . $row["Company"] . ')</span><span>' . $row["Count"] . '</span></ul>';
+			print '<ul><li>' . $row["Name"] . ' (' . $row["Company"] . ') ' . $row["Count"] . ' шт.</span></ul>';
 			
 			$previous_date =  $row["Date"];
 		}
