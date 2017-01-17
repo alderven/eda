@@ -11,8 +11,6 @@ session_start();
 			<form class="form-signin" method="post" action="ChangePasswordVerification.php">
 				<div align="center"><h2 class="form-signin-heading">Смена пароля</h2></div>
 				<label for="inputPassword" class="sr-only">Password</label>
-				<input type="password" name="currentPassword" id="currentPassword" class="form-control" placeholder="Текущий пароль" required>
-				<label for="inputPassword" class="sr-only">Password</label>
 				<input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="Новый пароль" required>
 				<label for="inputPassword" class="sr-only">Password</label>
 				<input type="password" name="newPasswordRepeat" id="newPasswordRepeat" class="form-control" placeholder="Новый пароль (еще раз)" required>

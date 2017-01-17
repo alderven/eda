@@ -37,8 +37,9 @@ if($count == 1){
 		$errorMessage .= '- Новый пароль должен содержать цифры<br>';
 	}
 	if ($errorMessage === NULL)  {
+		$newPasswordHashed = password_hash($newPassword, PASSWORD_DEFAULT);
 		# Write new Password to DB
-		$sql = "UPDATE $table_users SET Password = '$newPassword', RestorePasswordGUID = '' WHERE Login='$myusername'";
+		$sql = "UPDATE $table_users SET Password = '$newPasswordHashed', RestorePasswordGUID = '' WHERE Login='$myusername'";
 		$result = $conn->query($sql);
 		unset($_SESSION['myusername']);
 		unset($_SESSION['mypassword']);

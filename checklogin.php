@@ -12,19 +12,33 @@ $myusername = stripslashes($myusername);
 $mypassword = stripslashes($mypassword);
 $myusername = mysql_real_escape_string($myusername);
 $mypassword = mysql_real_escape_string($mypassword);
-$sql="SELECT * FROM $table_users WHERE login='$myusername' and password='$mypassword'";
+$sql = "SELECT Password FROM users WHERE Login=\"$myusername\"";
 $result = $conn->query($sql);
-
-// Mysql_num_row is counting table row
 $count=mysqli_num_rows($result);
 
-// If result matched $myusername and $mypassword, table row must be 1 row
-if($count==1){
+$error_msg = 'Некорректный адрес электронной почты и/или пароль';
+$error_redirect = 'index.php';
+if($count==0){
+	$_SESSION['loginError'] = $error_msg;
+	header("location:$error_redirect");
+	exit();
+}
 
-	// Register $myusername, $mypassword and redirect to file "menu.php"
+while ($row = $result->fetch_assoc()) {
+	$password = $row["Password"];
+}
+
+$result = password_verify($mypassword, $password);
+# print 'Entered Password: ' . $mypassword . '<br>';
+# print 'Hash from DB: ' . $password . '<br>';
+# print 'Password Verify Result: ' . $result;
+# exit();
+
+if (password_verify($mypassword, $password)) {
+
 	$_SESSION['myusername'] = $myusername;
-	$_SESSION['mypassword'] = $mypassword;
 
+	# Generate refer link
 	$refer_url = null;
 	$sql = "SELECT MenuFilter FROM users WHERE Login = \"$myusername\"";
 	# print $sql;
@@ -36,7 +50,7 @@ if($count==1){
 	header("location:$refer_url");
 }
 else {
-	$_SESSION['loginError'] = 'Некорректный адрес электронной почты и/или пароль';
-	header("location:index.php");
+	$_SESSION['loginError'] = $error_msg;
+	header("location:$error_redirect");
 }
 ?>

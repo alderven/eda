@@ -49,6 +49,7 @@ if($count == 1){
 	}
 	else {
 		# Write new Password to DB
+		$newPassword = password_hash($password, PASSWORD_DEFAULT);
 		$sql = "UPDATE $table_users SET Password = '$newPassword' WHERE Login='$myusername'";
 		$result = $conn->query($sql);
 		unset($_SESSION['myusername']);

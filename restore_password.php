@@ -33,11 +33,11 @@ if (isset($_GET['restoreId']) and isset($_GET['id'])) {
 				</form>';
 	}
 	else {
-		$_SESSION['errorMessage'] = 'Ошибка восстановления пароля';
+		$_SESSION['errorMessage'] = 'Ошибка восстановления пароля. Не найдено информации об аккаунте пользователя.';
 	}
 }
 else {
-	$_SESSION['errorMessage'] = 'Ошибка восстановления пароля';
+	$_SESSION['errorMessage'] = 'Ошибка восстановления пароля. Параметры восстановления некорректные/не найдены.';
 }
 
 if (isset($_SESSION['errorMessage'])) {

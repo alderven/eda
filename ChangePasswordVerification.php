@@ -4,33 +4,27 @@ require_once "config.php";
 
 // Define $myusername and $mypassword 
 $myusername=strtolower($_SESSION['myusername']);
-$currentPassword=$_POST['currentPassword'];
 $newPassword=$_POST['newPassword'];
 $newPasswordRepeat=$_POST['newPasswordRepeat'];
 
 // To protect MySQL injection
 $myusername = stripslashes($myusername);
-$currentPassword = stripslashes($currentPassword);
 $newPassword = stripslashes($newPassword);
 $newPasswordRepeat = stripslashes($newPasswordRepeat);
 
 $myusername = mysql_real_escape_string($myusername);
-$currentPassword = mysql_real_escape_string($currentPassword);
 $newPassword = mysql_real_escape_string($newPassword);
 $newPasswordRepeat = mysql_real_escape_string($newPasswordRepeat);
 
 
 $errorMessage = NULL;
 
-$sql="SELECT * FROM $table_users WHERE login='$myusername' and password='$currentPassword'";
+$sql="SELECT * FROM $table_users WHERE login='$myusername'";
 $result = $conn->query($sql);
 $count=mysqli_num_rows($result);
 if($count == 1){
 
 	# Password Validation
-	if (strcmp($currentPassword, $newPassword) === 0) {
-		$errorMessage .= '- Новый пароль должен отличаться от старого<br>';
-	}
 	if (strcmp($newPassword, $newPasswordRepeat) !== 0) {	
 		$errorMessage .= '- Новый пароль и повтор нового пароля не совпадают<br>';
 	}
@@ -45,7 +39,8 @@ if($count == 1){
 	}
 	if ($errorMessage === NULL)  {
 		# Write new Password to DB
-		$sql = "UPDATE $table_users SET Password = '$newPassword' WHERE Login='$myusername'";
+		$newPasswordHashed = password_hash($newPassword, PASSWORD_DEFAULT);
+		$sql = "UPDATE $table_users SET Password = '$newPasswordHashed' WHERE Login='$myusername'";
 		$result = $conn->query($sql);
 		unset($_SESSION['myusername']);
 		unset($_SESSION['mypassword']);
@@ -55,7 +50,7 @@ if($count == 1){
 	}
 }
 else {
-	$errorMessage = 'Некорректный текущий пароль';
+	$errorMessage = 'Текущий аккаунт не найден';
 }
 $_SESSION['errorMessage'] = $errorMessage;
 header("location:change_password.php");

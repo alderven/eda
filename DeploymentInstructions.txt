@@ -1,4 +1,21 @@
 ﻿####################################################################################################
+DEPLOY 2017.01.15 | PASSWORD ENCRYPT
+####################################################################################################
+
+1. Export PROD 'users' table for backup
+
+2. Update PROD with the latest source code from GitHub
+
+3. Open '_run_once_crypt_password.php' in browser.
+   Check in 'users' table that all passwords are encrypted
+
+4. Remove '_run_once_crypt_password.php' file from the PROD/DEV file systems
+   
+4. Try to login to the site. Login should be successful
+
+5. Switch emails in 'SendEmail.php' to PROD
+
+####################################################################################################
 DEPLOY 2017.01.02 | REMEMBER LATEST PAGE
 ####################################################################################################
 
