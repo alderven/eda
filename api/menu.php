@@ -4,11 +4,11 @@
 include 'auth.php';
 
 # 2. Get Menu from DB
-$sql = "SELECT Date, Name FROM $table_food
-		LEFT OUTER JOIN $table_orders ON $table_food.Id=$table_orders.MenuItemId
-		WHERE $table_orders.UserId = $user_id
-		AND Date >= CURDATE()
-		ORDER BY Date";
+$sql = "SELECT food.Date, food.Name FROM food
+		LEFT OUTER JOIN orders ON food.Id=orders.MenuItemId
+		WHERE orders.UserId = $user_id
+		AND food.Date >= CURDATE()
+		ORDER BY food.Date";
 
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {

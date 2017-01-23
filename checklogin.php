@@ -28,12 +28,6 @@ while ($row = $result->fetch_assoc()) {
 	$password = $row["Password"];
 }
 
-$result = password_verify($mypassword, $password);
-# print 'Entered Password: ' . $mypassword . '<br>';
-# print 'Hash from DB: ' . $password . '<br>';
-# print 'Password Verify Result: ' . $result;
-# exit();
-
 if (password_verify($mypassword, $password)) {
 
 	$_SESSION['myusername'] = $myusername;
