@@ -352,7 +352,7 @@ print  '<div class="container-fluid">
 				<div class="col-sm-2 text-center">
 					<a href="#" data-toggle="tooltip" title="Автозаполнить заказ"><button ng-click="vm.autofill()" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
 					<a href="#" data-toggle="tooltip" title="Очистить заказ"><button ng-click="vm.cleanupOrders()" type="submit" class="btn btn btn-danger"><span class="glyphicon glyphicon-trash"></span> </button></a>
-					<a href="print.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
+					<a href="print.user.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
 					<form ng-submit="excelSubmitted=true" action="SendEmail.php" method="get">

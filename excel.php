@@ -134,11 +134,11 @@ print '
 	
 	<div class="col-sm-3" align="center">
 		<input type="hidden" name="ExcelId"/>
-		<button type="submit" formaction="ludmila.php" name="ExcelId" class="btn btn-primary"><span class="glyphicon glyphicon-print"></span> Распечатка для Людмилы</button>
+		<button type="submit" formaction="print.ludmila.php" name="ExcelId" class="btn btn-warning"><span class="glyphicon glyphicon-print"></span> Распечатка для Людмилы</button>
 	</div>
 	
 	<div class="col-sm-3" align="center">
-		<button type="submit" formaction="excel_delete.php" name="ExcelId" class="btn btn-danger" disabled><span class="glyphicon glyphicon-trash"></span> Удалить Excel</button>
+		<button type="submit" formaction="print.users.php" name="ExcelId" class="btn btn-info"><span class="glyphicon glyphicon-print"></span> Распечатка для пользователей</button>
 	</div>
 	
 <br><br><hr>';
