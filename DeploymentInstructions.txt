@@ -1,4 +1,21 @@
 ﻿####################################################################################################
+DEPLOY 2017.01.15 | Add 'CompanyId'
+####################################################################################################
+
+1. Execute following SQL statements:
+
+   ALTER TABLE `users` ADD `CompanyId` TINYINT NOT NULL DEFAULT '1' AFTER `Surname`;
+   
+2. Change values of `CompanyId` parameter to 0 for following UserId: 0, 1, 2
+
+3. Execute following SQL statements:
+
+   ALTER TABLE `users` ADD `isActive` BOOLEAN NOT NULL DEFAULT TRUE AFTER `Id`;
+  
+4. Set values if 'isActive' parameter to 0 for following UserId: 44, 49
+
+
+####################################################################################################
 DEPLOY 2017.01.15 | PASSWORD ENCRYPT
 ####################################################################################################
 

@@ -12,11 +12,11 @@ $myusername = stripslashes($myusername);
 $mypassword = stripslashes($mypassword);
 $myusername = mysql_real_escape_string($myusername);
 $mypassword = mysql_real_escape_string($mypassword);
-$sql = "SELECT Password FROM users WHERE Login=\"$myusername\"";
+$sql = "SELECT Password FROM users WHERE Login=\"$myusername\" AND isActive = 1";
 $result = $conn->query($sql);
 $count=mysqli_num_rows($result);
 
-$error_msg = 'Некорректный адрес электронной почты и/или пароль';
+$error_msg = 'Некорректный адрес электронной почты и/или пароль, или аккаунт деактивирован';
 $error_redirect = 'index.php';
 if($count==0){
 	$_SESSION['loginError'] = $error_msg;

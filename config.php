@@ -59,6 +59,7 @@ if(isset($_SESSION['myusername'])) {
 	 while ($row = $result->fetch_assoc()) {
 		$user_id = $row["Id"];
 		$role_id = $row["RoleId"];
+		$company_id = $row["CompanyId"];
 		$name = $row["Name"];
 		$surname = $row["Surname"];
 		$email = $row["Login"];
@@ -71,6 +72,7 @@ if(isset($_SESSION['myusername'])) {
 					<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Администрирование<span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="excel.php"><span class="glyphicon glyphicon-paperclip"></span> Управление Excel файлами</a></li>
+						<li><a href="admin.users.php"><span class="glyphicon glyphicon-user"></span> Управление пользователями</a></li>
 						<li><a href="admin_stat_sum.php"><span class="glyphicon glyphicon-stats"></span> Статистика по стоимости заказов</a></li>
 					</ul>
 				</li>';
@@ -111,7 +113,7 @@ if(isset($_SESSION['myusername'])) {
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Разработка<span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="whats_new.php"><span class="glyphicon glyphicon-question-sign"></span> Что нового?</a></li>
+							<!--<li><a href="whats_new.php"><span class="glyphicon glyphicon-question-sign"></span> Что нового?</a></li>-->
 							<li><a href="api.php"><span class="glyphicon glyphicon-transfer"></span> Открытое API</a></li>
 							<li><a href="android.php"><span class="glyphicon glyphicon-phone"></span> Android-версия</a></li>
 						</ul>
