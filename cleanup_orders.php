@@ -17,7 +17,7 @@ if ($result->num_rows > 0)	{
 	}
 	
 	# 2. Delete dishes
-	$sql = "DELETE FROM $table_orders WHERE MenuItemId IN (" . implode(', ', $ordersToDelete) . ")";
+	$sql = "DELETE FROM $table_orders WHERE MenuItemId IN (" . implode(', ', $ordersToDelete) . ") AND UserId = $user_id";
 	$result = $conn->query($sql);
 }
 ?>
