@@ -10,6 +10,26 @@ require_once "common.php";
 # Check for Admin priveleges
 is_admin($role_id);
 
+
+function user_stats($conn, $user_id) {
+	$sql = "SELECT COUNT(DISTINCT food.Date) AS DaysCount, SUM(food.Price) as Sum
+			FROM food
+			INNER JOIN orders
+			ON food.Id = orders.MenuItemId
+			INNER JOIN users
+			ON users.Id = orders.UserId
+			WHERE users.Id = $user_id";
+	$result = $conn->query($sql);
+	$dishes_count = 0;
+	while ($row = $result->fetch_assoc()) {
+		$days_count = $row["DaysCount"];
+		$sum = $row["Sum"];
+		$sum_average = $row["DaysCount"] == 0 ? 0 : (round($row["Sum"] / $row["DaysCount"]));
+	}
+	
+	return array($days_count, $sum, $sum_average);
+}
+
 ?>
 
 <!-- https://datatables.net/ -->
@@ -107,33 +127,48 @@ print '
 <table id="example" class="display" cellspacing="0" width="100%">
 	<thead>
 		<tr>
-			<th><div align="center">Имя</div></th>
-			<th><div align="center">Статус</div></th>
-			<th><div align="center">Выбрать</div></th>
+			<th>Имя</th>
+			<th>Роль</th>
+			<th>Состояние</th>
+			<th>Активность<br>(дней)</th>
+			<th>Стоимость<br>всех заказов<br>(руб.)</th>
+			<th>Средняя<br>стоимость<br>заказа<br>(руб./день)</th>
+			<th>Выбрать</th>
 		</tr>
 	</thead>
 	<tfoot>
 		<tr>
-			<th><div align="center">Имя</div></th>
-			<th><div align="center">Статус</div></th>
-			<th><div align="center">Выбрать</div></th>
+			<th>Имя</th>
+			<th>Роль</th>
+			<th>Состояние</th>
+			<th>Активность<br>(дней)</th>
+			<th>Стоимость<br>всех заказов<br>(руб.)</th>
+			<th>Средняя<br>стоимость<br>заказа<br>(руб./день)</th>
+			<th>Выбрать</th>
 		</tr>
 	</tfoot>
 	<tbody>';
 
 # Display Table content
-$sql = "SELECT Id, isActive, Name, Surname FROM users
-		WHERE CompanyId = $company_id
+$sql = "SELECT users.Id, users.isActive, users.Name, users.Surname, roles.Name as RoleName FROM users
+		INNER JOIN roles ON
+		users.roleId = roles.Id
+		WHERE users.CompanyId = $company_id
 		ORDER BY Surname DESC";
-		
+
 $result = $conn->query($sql);
  while ($row = $result->fetch_assoc()) {
 	
-	$status = ($row["isActive"] == 1) ? 'Активирован' : 'Деактивирован';
+	$status = ($row["isActive"] == 1) ? 'Активный' : 'Отключен';
+	$stat = user_stats($conn, $row["Id"]);
 	
 	print '<tr>
 		<td align="left">' . $row["Surname"] . ' ' . $row["Name"]  . '</td>
+		<td align="left">' . $row["RoleName"]  . '</td>
 		<td align="left">' . $status  . '</td>
+		<td align="right">' . $stat[0] . '</td>
+		<td align="right">' . $stat[1] . '</td>
+		<td align="right">' . $stat[2] . '</td>
 		<td align="center"><label><input type="radio" checked="checked" value="' . $row["Id"] . '"name="UserId"></label></td>
 	</tr>';
  }

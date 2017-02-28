@@ -73,7 +73,6 @@ if(isset($_SESSION['myusername'])) {
 					<ul class="dropdown-menu">
 						<li><a href="excel.php"><span class="glyphicon glyphicon-paperclip"></span> Управление Excel файлами</a></li>
 						<li><a href="admin.users.php"><span class="glyphicon glyphicon-user"></span> Управление пользователями</a></li>
-						<li><a href="admin_stat_sum.php"><span class="glyphicon glyphicon-stats"></span> Статистика по стоимости заказов</a></li>
 					</ul>
 				</li>';
 	}

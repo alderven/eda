@@ -1,14 +1,28 @@
 ﻿####################################################################################################
-DEPLOY 2017.01.15 | Add 'CompanyId'
+DEPLOY 2017.02.30 | Add 'Roles' table
 ####################################################################################################
 
 1. Execute following SQL statements:
+
+   CREATE TABLE `eda`.`roles` ( `Id` TINYINT NOT NULL , `Name` TINYTEXT NOT NULL , `Description` TINYTEXT NOT NULL , UNIQUE (`Id`)) ENGINE = InnoDB;
+   INSERT INTO `eda`.`roles` (`Id`, `Name`) VALUES ('0', 'Суперадминистратор');
+   INSERT INTO `eda`.`roles` (`Id`, `Name`) VALUES ('1', 'Администратор');
+   INSERT INTO `eda`.`roles` (`Id`, `Name`) VALUES ('2', 'Пользователь');
+   INSERT INTO `eda`.`roles` (`Id`, `Name`, `Description`) VALUES ('3', 'Демо-пользователь', 'Пользователь без возможности отправлять заказ');
+   ALTER TABLE `users` ADD FOREIGN KEY (`RoleId`) REFERENCES `eda`.`roles`(`Id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+####################################################################################################
+DEPLOY 2017.02.27 | Add new Users characteristics ('CompanyId' and 'isActive')
+####################################################################################################
+
+1. Execute following SQL statement:
 
    ALTER TABLE `users` ADD `CompanyId` TINYINT NOT NULL DEFAULT '1' AFTER `Surname`;
    
 2. Change values of `CompanyId` parameter to 0 for following UserId: 0, 1, 2
 
-3. Execute following SQL statements:
+3. Execute following SQL statement:
 
    ALTER TABLE `users` ADD `isActive` BOOLEAN NOT NULL DEFAULT TRUE AFTER `Id`;
   
@@ -36,7 +50,7 @@ DEPLOY 2017.01.15 | PASSWORD ENCRYPT
 DEPLOY 2017.01.02 | REMEMBER LATEST PAGE
 ####################################################################################################
 
-1. Execute following SQL statements:
+1. Execute following SQL statement:
 
 ALTER TABLE users ADD MenuFilter TINYTEXT NOT NULL AFTER Surname;
 
