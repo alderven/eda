@@ -100,7 +100,7 @@ else {
 		array_push($files_inside_zip, $newfile);
 		
 		// 10. Call Python Script.
-		exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi aggregate " . $excel_id . " " . $user_id);
+		exec("\"C:/Program Files/Python36/python.exe\" ../cgi-bin/ParseAndAggregate.cgi aggregate " . $excel_id . " " . $user_id);
 		
 		$tmp_file = $excel_id . '.xls';
 		

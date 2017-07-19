@@ -76,7 +76,7 @@ if ($result->num_rows == 0) {
 		}
 		
 		# Parse Excel
-		exec("C:/Python34/python ../cgi-bin/ParseAndAggregate.cgi parse " . "\"" . $uploadfile . "\" " . $excel_id);
+		exec("\"C:/Program Files/Python36/python.exe\" ../cgi-bin/ParseAndAggregate.cgi parse " . "\"" . $uploadfile . "\" " . $excel_id);
 		
 		# Get Added Excel info
 		$sql = "SELECT * FROM excel WHERE Id = '$excel_id'";

@@ -59,4 +59,34 @@ function day_of_week($date) {
 	return $dayofweek;
 }
 
+function email_send($subject, $from_login, $from_pass, $to, $body) {
+	
+	include 'Mail.php';
+
+	$headers = array(
+		'From' => '<'. $from_login . '>',
+		'To' => '<' . $to . '>',
+		'Subject' => "=?UTF-8?B?" . base64_encode(html_entity_decode($subject, ENT_COMPAT, 'UTF-8')) . "?=",
+		'Content-Type' => 'text/html; charset=UTF-8'
+	);
+
+	$smtp = Mail::factory('smtp', array(
+			'host' => 'ssl://smtp.yandex.ru',
+			'port' => '465',
+			'auth' => true,
+			'username' => $from_login,
+			'password' => $from_pass
+		));
+
+	$mail = $smtp->send($to, $headers, $body);
+	$result = null;
+	
+	if (PEAR::isError($mail)) {
+		$result = $mail->getMessage();
+		error_log('Ошибка отправки сообщения: ' . $result, 0);
+	}
+	
+	return $result;
+}
+
  ?>

@@ -32,6 +32,7 @@ function user_stats($conn, $user_id) {
 
 ?>
 
+
 <!-- https://datatables.net/ -->
 <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
@@ -74,8 +75,8 @@ if (isset($_SESSION['alert_type']) and isset($_SESSION['alert_text'])) {
 print '
 <div class="row">
 
-	<div class="col-sm-3" align="center">
-		<button type="button" class="btn btn btn-success disabled" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-cloud-plus"></span> Добавить нового пользователя</button>
+	<div class="col-sm-4" align="center">
+		<button type="button" class="btn btn btn-success" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Добавить нового пользователя</button>
 		
 		<!-- Modal -->
 		<div id="myModal" class="modal fade" role="dialog">
@@ -87,13 +88,18 @@ print '
 						<h4 class="modal-title">Добавление нового пользователя</h4>
 					</div>
 					<div class="modal-body" align="center">
-						<form action="admin.user.add.php" method="post" enctype="multipart/form-data">
-							<table>
-								<tr>
-									<td><input type="file" class="btn btn btn-default" name="uploadfile"></td>
-									<td><button type="submit" class="btn btn btn-success"><span class="glyphicon glyphicon-cloud-upload"></span> Загрузить Excel</button></td>
-								</tr>
-							</table>
+						<form class="form-signin" action="admin.user.add.php" method="post">
+						
+							<label for="email" class="sr-only">Email address</label>
+							<input type="email" name="email" id="email" class="form-control" placeholder="Адрес электронной почты" required autofocus>
+							
+							<label for="name" class="sr-only">Имя</label>
+							<input type="string" name="name" id="name" class="form-control" placeholder="Имя" required autofocus>
+
+							<label for="surname" class="sr-only">Фамилия</label>
+							<input type="string" name="surname" id="surname" class="form-control" placeholder="Фамилия" required autofocus>
+														
+							<button class="btn btn btn-success btn-block" type="submit"><span class="glyphicon glyphicon-plus"></span> Добавить нового пользователя</button>
 						</form>
 					</div>
 					<div class="modal-footer">
@@ -106,18 +112,11 @@ print '
 	</div>
 	
 	<form action="admin.user.login_as.php" method="post">
-	
-		<div class="col-sm-3" align="center">
-			<input type="hidden" name="UserId"/>
-			<button type="submit" formaction="admin.user.edit.php" class="btn btn-primary disabled"><span class="glyphicon glyphicon-cloud-edit"></span> Редактировать пользователя</button>
-		</div>
-		
-		<div class="col-sm-3" align="center">
-			<button type="submit" formaction="admin.user.login_as.php" name="UserId" class="btn btn-warning"><span class="glyphicon glyphicon-user"></span> Войти как пользователь</button>
-		</div>
-		
-		<div class="col-sm-3" align="center">
-			<button type="submit" formaction="admin.user.delete.php" name="UserId" class="btn btn-info disabled"><span class="glyphicon glyphicon-remove"></span> Удалить пользователя</button>
+		<div class="col-sm-4" align="center">
+			<button type="submit" formaction="admin.user.login_as.php" name="UserId" class="btn btn-info"><span class="glyphicon glyphicon-user"></span> Войти как пользователь</button>
+			</div>
+		<div class="col-sm-4" align="center">
+			<button type="submit" formaction="admin.user.activate.php" name="UserId" class="btn btn-warning"><span class="glyphicon glyphicon-off"></span> Активировать\деактивировать пользователя</button>
 	</div>
 	
 <br><br><hr>';
@@ -159,7 +158,7 @@ $sql = "SELECT users.Id, users.isActive, users.Name, users.Surname, roles.Name a
 $result = $conn->query($sql);
  while ($row = $result->fetch_assoc()) {
 	
-	$status = ($row["isActive"] == 1) ? 'Активный' : 'Отключен';
+	$status = ($row["isActive"] == 1) ? 'Активный' : 'Деактивирован';
 	$stat = user_stats($conn, $row["Id"]);
 	
 	print '<tr>
