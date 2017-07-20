@@ -11,9 +11,9 @@ require_once "common.php";
 is_admin($role_id);
 
 # Get Email, Name, Surname parameters
-$email = isset($_POST['email']) ? $_POST['email'] : '';
-$name = isset($_POST['name']) ? $_POST['name'] : '';
-$surname = isset($_POST['surname']) ? $_POST['surname'] : '';
+$email = strtolower($_POST['email']);
+$name = $_POST['name'];
+$surname = $_POST['surname'];
 
 # Check, that this email not exist in the system
 $sql = "SELECT Name, Surname FROM users WHERE Login = \"$email\"";
