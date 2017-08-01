@@ -1,5 +1,5 @@
 <?php
-
+include 'Mail.php';
 
 function is_admin($role_id) {
 	if ($role_id > 1) {
@@ -59,9 +59,7 @@ function day_of_week($date) {
 	return $dayofweek;
 }
 
-function email_send($subject, $from_login, $from_pass, $to, $body) {
-	
-	include 'Mail.php';
+function send_email($subject, $from_login, $from_pass, $to, $body) {
 
 	$headers = array(
 		'From' => '<'. $from_login . '>',

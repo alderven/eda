@@ -355,7 +355,7 @@ print  '<div class="container-fluid">
 					<a href="print.user.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
-					<form ng-submit="excelSubmitted=true" action="SendEmail.php" method="get">
+					<form ng-submit="excelSubmitted=true" action="menu.sendEmail.php" method="get">
 						<input type="hidden" name="date" value="' . $date . '"/>
 						<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
 					</form>

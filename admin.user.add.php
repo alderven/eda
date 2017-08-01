@@ -51,7 +51,7 @@ $body = '<html><head><meta charset=\"UTF-8\"></head><body>' . $name . ',<br><br>
 Примерный лимит на заказ - 350 рублей/день.<br>
 
 <h6>Не отвечайте на это письмо! Оно было отправлено роботом. По всем вопросам пишите на aananyev@adalisk.com<h6></body></html>';
-$result = email_send($subject, $send_email_from, $send_email_from_pass, $email, $body);
+$result = send_email($subject, $send_email_from, $send_email_from_pass, $email, $body);
 
 # Show result message
 if ($result) {
