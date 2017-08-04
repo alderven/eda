@@ -61,13 +61,17 @@ function day_of_week($date) {
 
 function send_email($subject, $from_login, $from_pass, $to, $body) {
 
+	$to = '<' . implode('>, <', $to). '>';
+	error_log("Send email with Subject [$subject] to [$to]", 0);
+	error_log("Email body: $body", 0);
+	
 	$headers = array(
 		'From' => '<'. $from_login . '>',
-		'To' => '<' . $to . '>',
+		'To' => $to,
 		'Subject' => "=?UTF-8?B?" . base64_encode(html_entity_decode($subject, ENT_COMPAT, 'UTF-8')) . "?=",
 		'Content-Type' => 'text/html; charset=UTF-8'
 	);
-
+	
 	$smtp = Mail::factory('smtp', array(
 			'host' => 'ssl://smtp.yandex.ru',
 			'port' => '465',
@@ -84,6 +88,7 @@ function send_email($subject, $from_login, $from_pass, $to, $body) {
 		error_log('Ошибка отправки сообщения: ' . $result, 0);
 	}
 	
+	error_log("Sending email finished with the result: [$result]", 0);
 	return $result;
 }
 

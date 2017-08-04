@@ -89,13 +89,15 @@ function compose_email($company, $name, $surname, $dates, $user_email, $week_num
 	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
 	##############################################################################################
 	
-	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-	# $mail_to = 'spetrochenkov@adalisk.com, aananyev@adalisk.com, vvatulin@adalisk.com, ' . $user_email; // Include V.Vatulin
-	$mail_to = 'aananyev@adalisk.com, eda@adalisk.com'; // Debug
+	# $mail_to = ["spetrochenkov@adalisk.com", "aananyev@adalisk.com", "$user_email"]; // Release
+	# $mail_to = ["spetrochenkov@adalisk.com", "aananyev@adalisk.com", "vvatulin@adalisk.com", "$user_email"]; // Include V.Vatulin
+	# $mail_to = ["aananyev@adalisk.com", "eda@adalisk.com"]; // Debug
+	$mail_to = ["eda@adalisk.com", "$user_email"]; // Debug email notifications
 	if ($company === 'Адам')
 	{
-		# $mail_to = 'adoskhoev@adalisk.com, aananyev@adalisk.com, ' . $user_email; // Release
-		$mail_to = 'aananyev@adalisk.com'; // Debug
+		# $mail_to = ["adoskhoev@adalisk.com", "aananyev@adalisk.com", "$user_email"]; // Release
+		# $mail_to = ["aananyev@adalisk.com"]; // Debug
+		$mail_to = ["eda@adalisk.com", "alexander.ananyev@glidewelldental.com", "$user_email"]; // Debug email notifications
 	}
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
