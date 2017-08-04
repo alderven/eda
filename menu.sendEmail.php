@@ -33,9 +33,15 @@ function generate_dishes_list($conn, $user_id, $excel_id) {
 					$months = array( '', 'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря' );
 					$month = $months[intval(date("m", strtotime($row["Date"])))];
 					
-					$html .= '<br><h4><b>' . $dayofweek . ' ' . date("d", strtotime($row["Date"])) . ' ' . $month . '</b></h4>';
+					$html .= '<br>
+								<h4>
+									<b>' . $dayofweek . ' ' . date("d", strtotime($row["Date"])) . ' ' . $month . '
+									</b>
+								</h4>
+								'; # next line made for fixing the issue with HTML formatting
 				}
-				$html .= ' - '. $row["Name"] . ' ' . $row["Count"] . ' шт.<br>';
+				$html .= ' - '. $row["Name"] . ' ' . $row["Count"] . ' шт.<br>
+				';  # next line made for fixing the issue with HTML formatting
 				
 				$previous_date =  $row["Date"];
 			}
