@@ -1,3 +1,7 @@
+<?php
+require_once "common.php";
+?>
+
 		<div class="footer navbar-fixed-bottom row-fluid">
 			<div class="navbar-inner">
 				<div class="container">
@@ -5,7 +9,7 @@
 						<div class="text-center">
 							<span class="text-muted">
 								<span class="glyphicon glyphicon-cutlery"></span>
-								Сервис «Еда» © 2015-<?php echo date("Y"); ?>
+								Сервис «Еда» © 2015-<?php echo date("Y"); echo ' ' . get_version(); ?>
 							</span>
 						<div>
 					</div>

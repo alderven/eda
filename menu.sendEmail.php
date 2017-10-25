@@ -89,22 +89,12 @@ function rus2translit($string) {
 }
 
 # Compose email
-function compose_email($company, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass, $user_id, $excel_id, $conn)
+function compose_email($company, $name, $surname, $dates, $user_email, $week_number, $send_email_from, $send_email_from_pass, $user_id, $excel_id, $conn, $recipients_adam, $recipients_cimus)
 {
-	##############################################################################################
-	# DON'T FORGET TO DISABLE ADAM'S AND SERGEY'S REAL EMAILS WHEN DEBUG
-	##############################################################################################
+	$mail_to = $recipients_cimus;
 	
-	# $mail_to = ["spetrochenkov@adalisk.com", "aananyev@adalisk.com", "$user_email"]; // Release
-	# $mail_to = ["spetrochenkov@adalisk.com", "aananyev@adalisk.com", "vvatulin@adalisk.com", "$user_email"]; // Include V.Vatulin
-	# $mail_to = ["aananyev@adalisk.com", "eda@adalisk.com"]; // Debug
-	$mail_to = ["eda@adalisk.com", "$user_email"]; // Debug email notifications
-	if ($company === 'Адам')
-	{
-		# $mail_to = ["adoskhoev@adalisk.com", "aananyev@adalisk.com", "$user_email"]; // Release
-		# $mail_to = ["aananyev@adalisk.com"]; // Debug
-		$mail_to = ["eda@adalisk.com", "alexander.ananyev@glidewelldental.com", "$user_email"]; // Debug email notifications
-	}
+	if ($company === 'Адам') {
+		$mail_to = $recipients_adam; }
 	
 	$subject = $week_number . ' неделя - ' . $company . ' - ' . $dates[0] . '-' . $dates[count($dates)-1];
 	if ("$week_number" === '0')
@@ -197,13 +187,32 @@ $excel_ids = array();
 $location = "menu.php?date=$date";
 if (count($excel_ids) == 0)
 {
-	$title = 'Письмо не отправлено';
-	$text =  'Письмо не отправлено. Вы пока ничего не заказали.';
+	$subject = 'Сделан пустой заказ';
+	$body = "<html>
+			<head>
+				<meta charset=\"UTF-8\">
+			</head>
+			<body>
+				<b>" . $name . " " . $surname . "</b> сделал(а) пустой заказ. Возможно, были отменены ранее заказанные блюда.
+				<br>
+				<br>
+				<h6>Не отвечайте на это письмо! Оно было отправлено роботом. По всем вопросам пишите на aananyev@adalisk.com<h6>
+			</body>
+		</html>";
+
+	$result = send_email($subject, $send_email_from, $send_email_from_pass, $recipients_when_nothing_ordered, $body);
+	if ($result) {
+		$title = "Сообщение не отправлено";
+		$text = "Попробуйте еще раз. Ошибка: $result";
+		}
+	else {
+		$title = "Сообщение отправлено";
+		$text = "Вы ничего не заказали. Возможно, так и было задумано";
+	}
 	modal($title, $text, $location);
 }
 else {
 	# 7. Loop over ExcelId's.
-	$title = 'Статус оправки письма';
 	$text = [];
 	
 	foreach ($excel_ids as $excel_id) {
@@ -232,12 +241,14 @@ else {
 			$week_number =  $row["WeekNumber"];
 		}
 		
-		$result = compose_email($company, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass, $user_id, $excel_id, $conn);
+		$result = compose_email($company, $name, $surname, $dates, $email, $week_number, $send_email_from, $send_email_from_pass, $user_id, $excel_id, $conn, $recipients_adam, $recipients_cimus);
 		
 		if ($result) {
+			$title = "Сообщение не отправлено";
 			array_push($text, "Ошибка при отправке письма для компании <b>$company</b>. Сообщение от почтового клиента: $result");
 			}
 		else {
+			$title = "Сообщение отправлено";
 			array_push($text, "Письмо о заказе в компании <b>$company</b> отправлено на ваш адрес <b>$email</b>.");
 		}
 	}

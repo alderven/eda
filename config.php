@@ -1,4 +1,5 @@
 <?php
+require_once "common.php";
 
 ###################################################################################################
 # I. Define Constants
@@ -46,14 +47,10 @@ $result = $conn->query($sql);
 	$send_email_from_pass = $row["ParameterValue"];
  }
  
-###################################################################################################
-# IV. Generate Navigation Bar
-###################################################################################################
-
-# 1. Generate Navigation Bar only if User Session defined
+# Proceed further only if User Session defined
 if(isset($_SESSION['myusername'])) {
 	
-	# 2. Get User Id/RoleId/Name/Surname
+	# Get User info from DB
 	$sql = "SELECT * FROM $table_users WHERE Login = '" . $_SESSION['myusername'] . "'";
 	$result = $conn->query($sql);
 	 while ($row = $result->fetch_assoc()) {
@@ -64,7 +61,29 @@ if(isset($_SESSION['myusername'])) {
 		$surname = $row["Surname"];
 		$email = $row["Login"];
 	}
+	
+	
+	###################################################################################################
+	# IV. Get email recipients
+	###################################################################################################
+	
+	# 4. Define Email recipients
+	$recipients_adam = ['adoskhoev@adalisk.com', 'aananyev@adalisk.com', $email];
+	$recipients_cimus = ['spetrochenkov@adalisk.com', 'aananyev@adalisk.com', $email];
+	$recipients_kunak = ['vsmirnov@adalisk.com', 'spetrochenkov@adalisk.com', 'vvaplyushkin@adalisk.com', 'aananyev@adalisk.com'];
+	$recipients_when_nothing_ordered = ['adoskhoev@adalisk.com', 'spetrochenkov@adalisk.com', 'aananyev@adalisk.com', $email];
 
+	if (get_version() == 'Debug') {
+		$recipients_adam = ['alexander.ananyev@glidewelldental.com', $email];
+		$recipients_cimus = ['eda@adalisk.com', 'alexander.ananyev@glidewelldental.com', $email];
+		$recipients_kunak = ['alexander.ananyev@glidewelldental.com'];
+		$recipients_when_nothing_ordered = ['alexander.ananyev@glidewelldental.com', $email];
+	}
+
+	###################################################################################################
+	# V. Generate Navigation Bar
+	###################################################################################################
+	
 	# 3. Initialize Admin Navigation Bar depending on the User RoleId
 	$adminNavBar = '';
 	if ($role_id == 0 or $role_id == 1) {

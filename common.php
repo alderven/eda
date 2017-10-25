@@ -92,4 +92,10 @@ function send_email($subject, $from_login, $from_pass, $to, $body) {
 	return $result;
 }
 
+function get_version() {
+	$version = '';
+	if (strpos(php_uname(), 'Windows 7') == true) {
+		$version = 'Debug';	}
+	return $version;
+}
  ?>
