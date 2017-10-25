@@ -337,33 +337,27 @@ if ($role_id == 3) {
 # 10. Create Buttons Panel.
 print  '<div class="container-fluid">
 			<div class="panel-footer row">
-				<div class="col-sm-6 text-left">
+				<div class="col-sm-7 text-left">
 					<form action="?filter=&date=&company=" method="get">
 						<div class="btn-group">
-							<button type="submit" name="filter" value="" class="btn btn-' . $filter_btn_all_state . '">Без фильтров</button>
-							<button type="submit" name="company" value="Цимус" class="btn btn-' . $filter_by_company_cimus . '">Цимус</button>
-							<button type="submit" name="company" value="Адам" class="btn btn-' . $filter_by_company_adam . '">Адам</button>
-							<button type="submit" name="filter" value="custom" class="btn btn-' . $filter_custom . '">Ручной фильтр</button>
-							<button type="submit" name="filter" value="filtered" class="btn btn-' . $filter_btn_filtered_state . '">Мой заказ</button>
+							<button type="submit" name="filter" value="" class="btn btn-' . $filter_btn_all_state . '"><span class="glyphicon glyphicon-filter"></span> Без фильтров</button>
+							<button type="submit" name="company" value="Цимус" class="btn btn-' . $filter_by_company_cimus . '"><span class="glyphicon glyphicon-filter"></span> Цимус</button>
+							<button type="submit" name="company" value="Адам" class="btn btn-' . $filter_by_company_adam . '"><span class="glyphicon glyphicon-filter"></span> Адам</button>
+							<button type="submit" name="filter" value="filtered" class="btn btn-' . $filter_btn_filtered_state . '"><span class="glyphicon glyphicon-filter"></span> Мой заказ</button>
+							<button type="submit" name="filter" value="custom" class="btn btn-' . $filter_custom . '"><span class="glyphicon glyphicon-filter"></span> Ручной фильтр</button>
 							<input type="hidden" value="' . $date . '" name="date">
 						</div>
 					</form>
 				</div>
 				<div class="col-sm-2 text-center">
 					<a href="#" data-toggle="tooltip" title="Автозаполнить заказ"><button ng-click="vm.autofill()" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
-					<a href="print.user.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 					<a href="#" data-toggle="tooltip" title="Очистить заказ"><button ng-click="vm.cleanupOrders()" type="submit" class="btn btn btn-danger"><span class="glyphicon glyphicon-trash"></span> </button></a>
-				</div>
-				<div class="col-sm-2 text-right">					
-					<form ng-submit="excelSubmitted=true" action="menu.sendEmailKunak.php" method="get">
-						<input type="hidden" name="date" value="' . $date . '"/>
-						<button ng-disabled="excelSubmitted" type="submit" class="btn btn-primary"' . $send_button_type . '"></span>Обедаю в «Кунаке»</button>
-					</form>
+					<a href="print.user.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
 				</div>
 				<div class="col-sm-2 text-right">					
 					<form ng-submit="excelSubmitted=true" action="menu.sendEmail.php" method="get">
 						<input type="hidden" name="date" value="' . $date . '"/>
-						<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить заказ</button>
+						<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
 					</form>
 				</div>
 			</div>
