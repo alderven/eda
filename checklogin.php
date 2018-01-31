@@ -32,16 +32,23 @@ if (password_verify($mypassword, $password)) {
 
 	$_SESSION['myusername'] = $myusername;
 
-	# Generate refer link
-	$refer_url = null;
-	$sql = "SELECT MenuFilter FROM users WHERE Login = \"$myusername\"";
-	# print $sql;
-	$result = $conn->query($sql);
-	while ($row = $result->fetch_assoc()) {
-		$refer_url = $row["MenuFilter"];
+	# Check for mobile client
+	$useragent=$_SERVER['HTTP_USER_AGENT'];
+	if(mobile()) {
+		header('location: menu.m.php');
 	}
-	$refer_url = $refer_url == '' ? 'menu.php' : $refer_url;
-	header("location:$refer_url");
+	else {
+		# Generate refer link for Desktop version
+		$refer_url = null;
+		$sql = "SELECT MenuFilter FROM users WHERE Login = \"$myusername\"";
+		# print $sql;
+		$result = $conn->query($sql);
+		while ($row = $result->fetch_assoc()) {
+			$refer_url = $row["MenuFilter"];
+		}
+		$refer_url = $refer_url == '' ? 'menu.php' : $refer_url;
+		header("location:$refer_url");
+	}
 }
 else {
 	$_SESSION['loginError'] = $error_msg;

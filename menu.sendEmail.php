@@ -161,7 +161,8 @@ $dates = trim($dates, ",");  # remove comma at the end of string
 if ($dates == '') {
 	$title = 'Ошибка';
 	$text = 'Ошибка. Корректная дата не найдена.';
-	modal($title, $text, 'menu.php');
+	$location = (mobile()) ? 'menu.php' : 'menu.m.php';
+	modal($title, $text, $location);
 }
 
 # 5. Find all ExcelId's by Date's
@@ -183,8 +184,8 @@ $excel_ids = array();
 	}
 }
 
-# 6. If User do not make order at all.
-$location = "menu.php?date=$date";
+# 6. If User does not make order at all
+$location = (mobile()) ? "menu.php?date=$date" : "menu.m.php?date=$date";
 if (count($excel_ids) == 0)
 {
 	$subject = 'Сделан пустой заказ';
