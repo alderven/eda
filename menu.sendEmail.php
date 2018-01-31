@@ -161,7 +161,7 @@ $dates = trim($dates, ",");  # remove comma at the end of string
 if ($dates == '') {
 	$title = 'Ошибка';
 	$text = 'Ошибка. Корректная дата не найдена.';
-	$location = (mobile()) ? 'menu.php' : 'menu.m.php';
+	$location = (mobile()) ? 'menu.m.php' : 'menu.php';
 	modal($title, $text, $location);
 }
 
@@ -185,7 +185,7 @@ $excel_ids = array();
 }
 
 # 6. If User does not make order at all
-$location = (mobile()) ? "menu.php?date=$date" : "menu.m.php?date=$date";
+$location = (mobile()) ? "menu.m.php?date=$date" : "menu.php?date=$date";
 if (count($excel_ids) == 0)
 {
 	$subject = 'Сделан пустой заказ';
