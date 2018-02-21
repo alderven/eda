@@ -127,6 +127,7 @@ print '
 	<thead>
 		<tr>
 			<th>Имя</th>
+			<th>Электронный адрес</th>
 			<th>Роль</th>
 			<th>Состояние</th>
 			<th>Активность<br>(дней)</th>
@@ -138,6 +139,7 @@ print '
 	<tfoot>
 		<tr>
 			<th>Имя</th>
+			<th>Электронный адрес</th>
 			<th>Роль</th>
 			<th>Состояние</th>
 			<th>Активность<br>(дней)</th>
@@ -149,7 +151,7 @@ print '
 	<tbody>';
 
 # Display Table content
-$sql = "SELECT users.Id, users.isActive, users.Name, users.Surname, roles.Name as RoleName FROM users
+$sql = "SELECT users.Id, users.Login, users.isActive, users.Name, users.Surname, roles.Name as RoleName FROM users
 		INNER JOIN roles ON
 		users.roleId = roles.Id
 		WHERE users.CompanyId = $company_id
@@ -163,6 +165,7 @@ $result = $conn->query($sql);
 	
 	print '<tr>
 		<td align="left">' . $row["Surname"] . ' ' . $row["Name"]  . '</td>
+		<td align="left">' . $row["Login"]  . '</td>
 		<td align="left">' . $row["RoleName"]  . '</td>
 		<td align="left">' . $status  . '</td>
 		<td align="right">' . $stat[0] . '</td>

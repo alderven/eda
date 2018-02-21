@@ -1,5 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Сервис «Еда»</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel="stylesheet">
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/locale/bootstrap-table-zh-CN.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+ 
+</head>
+
 <?php
-require_once "header.php";
+# require_once "header.php";
 session_start();
 if(!isset($_SESSION['myusername'])) {
 header("location:index.php");
@@ -19,13 +41,92 @@ require_once "common.php";
 	color: #d43f3a;
 	font-size: 18px;
 }
-
-
-
-
-
 </style>
 
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'sans serif';
+  font-size: 12pt;
+}
+.hidden-menu {
+  display: block;
+  position: fixed;
+  list-style:none;
+  padding: 10px;
+  margin: 0;
+  box-sizing: border-box;
+  width: 200px;
+  background-color: #eee;
+  height: 100%;
+  top: 0;
+  left: -200px;
+  transition: left .2s;
+  z-index: 2;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+.hidden-menu-ticker {
+  display: none;
+}
+.btn-menu {
+  color: #fff;
+  background-color: #666;
+  padding: 5px;
+  position: fixed;
+  top: 5px;
+  left: 5px;
+  cursor: pointer;
+  transition: left .23s;
+  z-index: 3;
+  width: 25px;
+  -webkit-transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+.btn-menu span {
+  display: block;
+  height: 5px;
+  background-color: #fff;
+  margin: 5px 0 0;
+  transition: all .1s linear .23s;
+  position: relative;
+}
+.btn-menu span.first {
+  margin-top: 0;
+}
+.hidden-menu-ticker:checked ~ .btn-menu {
+  left: 160px;
+}
+.hidden-menu-ticker:checked ~ .hidden-menu {
+  left: 0;
+}
+.hidden-menu-ticker:checked ~ .btn-menu span.first {
+  -webkit-transform: rotate(45deg);
+  top: 10px;
+}
+.hidden-menu-ticker:checked ~ .btn-menu span.second {
+  opacity: 0;
+}
+
+.hidden-menu-ticker:checked ~ .btn-menu span.third {
+  -webkit-transform: rotate(-45deg);
+  top: -10px;
+}
+header {
+  background-color: #666;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 2em;
+}
+</style>
+ 
 <script>
 angular.module('app', [])
 	.controller('menuCtrl', function($scope, $http) {
@@ -103,13 +204,13 @@ angular.module('app', [])
 			$http.post(url)
 				.success(function (response) {
 					
-					//$("#menuItemCounter" + id).animateCss('bounceIn');
+					// $("#menuItemCounter" + id).animateCss('bounceIn');
 					
 					// Update Items Count.
 					document.getElementById("menuItemCount" + id).innerHTML = response;
 
 					// Update Price Sum.
-					//vm.calculatePriceSum(date);
+					vm.calculatePriceSum(date);
 					/*
 					var container = document.getElementById("datesPaginator");
 					var content = container.innerHTML;
@@ -133,7 +234,7 @@ angular.module('app', [])
 					document.getElementById("menuItemCount" + id).innerHTML = itemsCount;
 					
 					// Update Price Sum.
-					//vm.calculatePriceSum(date);
+					vm.calculatePriceSum(date);
 					
 					if (itemsCount == 0 && filter)
 					{
@@ -170,115 +271,20 @@ $(document).ready(function(){
 
 <body ng-app="app" ng-controller="menuCtrl as vm">
 
-<!-- Display Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Автозаполнение</h4>
-      </div>
-      <div class="modal-body">
-        <p>В Вашем меню нет незаполненных дней.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-      </div>
-    </div>
+<input type="checkbox" id="hmt" class="hidden-menu-ticker">
+<label class="btn-menu" for="hmt">
+  <span class="first"></span>
+  <span class="second"></span>
+  <span class="third"></span>
+</label>
+<ul class="hidden-menu">
 
-  </div>
-</div>
+
+
+
+
 
 <?php
-
-####################################################################################################
-# Save current Menu filter
-$menu_filter = $_SERVER['REQUEST_URI'];
-
-$sql = "UPDATE users SET MenuFilter = \"$menu_filter\" WHERE Id = $user_id";
-$result = $conn->query($sql);
-####################################################################################################
-
-
-/*
-# 1. Display Navigation Bar
-print $navigationBar;
-*/
-
-# 2. Display Modal if necessary
-if (isset($_SESSION['modal_title']) and isset($_SESSION['modal_text'])) {
-	print '	<!--<br>modal_title: ' . $_SESSION['modal_title'] . '<br>modal_text:' . $_SESSION['modal_text'] . '<br>-->
-			<div id="Modal" class="modal fade bd-example-modal-sm" role="dialog">
-				<div class="modal-dialog modal-sm">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">' . $_SESSION['modal_title'] . '</h4>
-						</div>
-						<div class="modal-body">
-							<p>' . $_SESSION['modal_text'] . '</p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<script type="text/javascript">
-				<!--alert("Вы ничего пока не заказали.");-->
-				<!--alert(' . $_SESSION['modal_text'] . ');-->
-				$("#Modal").modal("show");
-			</script>';
-unset($_SESSION['modal_title']);
-unset($_SESSION['modal_text']);			
-}
-
-/*
-# 3. Initialize Page title	  
-print '<div align="center"><h1>Меню</h1></div>';
-*/
-
-# 4. Show Modal with Notifications
-$sql = "SELECT ShowNotification FROM $table_users WHERE Id = $user_id";
-$result = $conn->query($sql);
-while ($row = $result->fetch_assoc()) {
-	$showNotification = $row["ShowNotification"];
-}
-if ($showNotification == 1) {
-	
-	# 4.1 Disable displaying notification
-	$sql = "UPDATE $table_users SET ShowNotification = 0 WHERE Id = $user_id";
-	$result = $conn->query($sql);
-	
-	# 4.2 Display notification
-	print '	<div class="container">
-				<div class="modal fade" id="ModalNotification" role="dialog">
-					<div class="modal-dialog modal-lg">
-						<div class="modal-content">
-							<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">Что нового...</h4>
-							</div>
-							<div class="modal-body">
-								<!-- MESSAGE START -->
-								<!-- Update 30.10.2016-->
-								<div><h3><table class="table"><tr class="info"><td align="center">Версия от 30.10.2016</td></tr></tbody></table></h3></div>
-								На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
-								<div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
-								<hr>
-								<p>На странице авторизации теперь отображается общее количество заказов:
-								<div align="center"><img src="img\update20161030_loginPage.png"></div>
-								<hr>
-								<!-- MESSAGE END -->
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>';
-}
 
 # 5. Get Current Page Date.
 $date = isset($_GET['date']) ? $_GET['date'] : '';
@@ -332,24 +338,6 @@ else if ($company === 'Адам') {
 	$filter_custom = 'default';
 }
 
-# 9. Disable Send button for Test User
-$send_button_type = "";
-if ($role_id == 3) {
-	$send_button_type = ' disabled="disabled"';
-}
-
-# 10. Create Buttons Panel.
-print  '<div>			
-			<form ng-submit="excelSubmitted=true" action="menu.sendEmail.php" method="get">
-				<input type="hidden" name="date" value="' . $date . '"/>
-				<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить Excel Сергею/Адаму</button>
-			</form>
-		</div>';
-
-		
-
-$food_table_rows_colours = array('success', 'info', 'warning'); 
-
 
 $sql = "SELECT DISTINCT Date FROM $table_food WHERE DATE >= CURDATE() ORDER BY Date ASC";
 $result = $conn->query($sql);
@@ -366,14 +354,14 @@ if ($result->num_rows > 0)
 	$week_number = 0;
 	$last_day = '';
 	
-	print '<form action="" method="post">
-			<div class="container" align="center">
-			  <ul class="pagination pagination-sm">';
+	print '<div class="container-fluid">
+				<div align="center" class="panel-footer row">
+					<form action="" method="post">
+						<div class="btn-group-vertical">';
 	
 	$daysofweek = array();
 	
     while($row = $result->fetch_assoc()) {
-		
 		/*
 		# 11.1. Get Price Sum for Pagination.
 		$sum = 0;
@@ -387,9 +375,9 @@ if ($result->num_rows > 0)
 			$sum = 0;
 		}
 		*/
+		$dayofweek = day_of_week($row["Date"]);
 		
-		$dayofweek = day_of_week($row["Date"], $short=True);
-		
+		/*
 		# 11.2. Add Pagination Splitter if new week is started.
 		$dayofweek_dgt = date('w', strtotime($row["Date"]));
 		foreach ($daysofweek as &$day_nmbr) {
@@ -401,10 +389,6 @@ if ($result->num_rows > 0)
 				$total_price = 0;
 				$days_count = 0;
 				$week_number++;
-				
-				# 11.4. Add Pagination Splitter if new week is started.
-				print '</ul>
-				   <ul class="pagination pagination-sm">';
 				 
 				// Cleanup the array.
 				$daysofweek = array();
@@ -412,6 +396,7 @@ if ($result->num_rows > 0)
 			}
 		}
 		array_push($daysofweek, $dayofweek_dgt);
+		*/
 				
 		// Show first table when open Menu page.
 		if ($paging_date === '')
@@ -423,15 +408,17 @@ if ($result->num_rows > 0)
 		$page_active = '';
 		if ($row["Date"] === $paging_date)
 		{
-			$page_active = ' class="active"';
+			$page_active = '-primary';
 		}
-		$date_short = $row["Date"][8] . $row["Date"][9] . '.' . $row["Date"][5] . $row["Date"][6];
-		print '<li' . $page_active . '><a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '">' . $dayofweek . " " . $date_short . '<div id="priceSum' . $row["Date"] . '"></div></a></li>';
 		
-		/*
+		$date_short = $row["Date"][8] . $row["Date"][9] . '.' . $row["Date"][5] . $row["Date"][6];
+		print '<a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '" class="btn btn' . $page_active . '">' . $dayofweek . ", " . $date_short . '<div id="priceSum' . $row["Date"] . '"></div></a>';
+		# print '<button type="button" class="btn btn' . $page_active . '"><a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '">' . $dayofweek . ", " . $date_short . '<div id="priceSum' . $row["Date"] . '"></div></a></button>';
+		# print '<button type="button" class="btn btn' . $page_active . '"><a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '">' . $dayofweek . "<br>" . $row["Date"] . '<div id="priceSum' . $row["Date"] . '">' . $sum .  ' руб.</div></a></button>';
+		# print '<li' . $page_active . '><a href="?date=' . $row["Date"] . '&filter=' . $filter . '&company=' . $company . '">' . $dayofweek . "<br>" . $row["Date"] . '<div id="priceSum' . $row["Date"] . '">' . $sum .  ' руб.</div></a></li>';
+		
 		// Calculate total price.
-		$total_price = $total_price + $sum;
-		*/
+		# $total_price = $total_price + $sum;
 		
 		// Days Count.
 		$days_count++;
@@ -444,32 +431,173 @@ if ($result->num_rows > 0)
 	print '<li class="disabled"><a href="#"><div id="totalPriceForWeek' . $week_number . '">Всего: ' . $total_price . ' руб.</div><br><div id="averagePriceForWeek' . $week_number . '">Средн.: ' . $average .  ' руб.</div></a></li>';
 	*/
 	
-	print '	  </ul>
+	print '</div></div></form></div>';
+}
+
+
+
+
+
+
+
+# 9. Disable Send button for Test User
+$send_button_type = "";
+if ($role_id == 3) {
+	$send_button_type = ' disabled="disabled"';
+}
+
+# 10. Create Buttons Panel.
+print  '<div class="container-fluid">
+			<div class="panel-footer row">
+				<form action="?filter=&date=&company=" method="get">
+					<div class="btn-group-vertical">
+						<button type="submit" name="filter" value="" class="btn btn-' . $filter_btn_all_state . '"><span class="glyphicon glyphicon-filter"></span> Без фильтров</button>
+						<button type="submit" name="company" value="Цимус" class="btn btn-' . $filter_by_company_cimus . '"><span class="glyphicon glyphicon-filter"></span> Цимус</button>
+						<button type="submit" name="company" value="Адам" class="btn btn-' . $filter_by_company_adam . '"><span class="glyphicon glyphicon-filter"></span> Адам</button>
+						<button type="submit" name="filter" value="filtered" class="btn btn-' . $filter_btn_filtered_state . '"><span class="glyphicon glyphicon-filter"></span> Мой заказ</button>
+						<button type="submit" name="filter" value="custom" class="btn btn-' . $filter_custom . '"><span class="glyphicon glyphicon-filter"></span> Ручной фильтр</button>
+						<input type="hidden" value="' . $date . '" name="date">
+					</div>
+				</form>
 			</div>
-			</form>';
+		</div>
+		
+		<div class="container-fluid">
+			<div align="center" class="panel-footer row">
+				<a href="#" data-toggle="tooltip" title="Автозаполнить заказ"><button ng-click="vm.autofill()" type="submit" class="btn btn btn-warning"><span class="glyphicon glyphicon-flash"></span> </button></a>
+				<a href="#" data-toggle="tooltip" title="Очистить заказ"><button ng-click="vm.cleanupOrders()" type="submit" class="btn btn btn-danger"><span class="glyphicon glyphicon-trash"></span> </button></a>
+				<a href="print.user.php" target="_blank" data-toggle="tooltip" title="Распечатать заказ"><button type="submit" class="btn btn btn-info"><span class="glyphicon glyphicon-print"></span> </button></a>
+			</div>
+		</div>
 	
-	/*
-	# 12.1. Create Table with Dishes.
-	print '<table class="table table-hover"
-					<thead>
-						<tr>
-							<th width="30"></th>
-							<th width="100"><div class="text-center">Категория</div></th>
-							<th width="500"><div class="text-center">Блюдо</div></th>
-							<th width="60"><div class="text-center">Вес (гр.)</div></th>
-							<th width="65"><div class="text-center">Цена (р.)</div></th>
-							<th width="100"><div class="text-center">Поставщик</div></th>
-							<th width="50"><div class="text-center">Добавить / удалить</div></th>
-						</tr>
-					</thead>
-					<tbody><tbody></table>';
-	*/
+		<div class="container-fluid">
+			<div class="panel-footer row">				
+				<form ng-submit="excelSubmitted=true" action="menu.sendEmail.php" method="get">
+					<input type="hidden" name="date" value="' . $date . '"/>
+					<button ng-disabled="excelSubmitted" type="submit" class="btn btn-success"' . $send_button_type . '"><span class="glyphicon glyphicon-send"></span> Отправить заказ</button>
+				</form>
+			</div>
+		</div>';
+?>
+</ul>
+
+
+<!-- Display Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Автозаполнение</h4>
+      </div>
+      <div class="modal-body">
+        <p>В Вашем меню нет незаполненных дней.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<?php
+/*
+####################################################################################################
+# Save current Menu filter
+$menu_filter = $_SERVER['REQUEST_URI'];
+
+$sql = "UPDATE users SET MenuFilter = \"$menu_filter\" WHERE Id = $user_id";
+$result = $conn->query($sql);
+####################################################################################################
+*/
+
+# 1. Display Navigation Bar
+# print $navigationBar;
+
+# 2. Display Modal if necessary
+if (isset($_SESSION['modal_title']) and isset($_SESSION['modal_text'])) {
+	print '	<!--<br>modal_title: ' . $_SESSION['modal_title'] . '<br>modal_text:' . $_SESSION['modal_text'] . '<br>-->
+			<div id="Modal" class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">' . $_SESSION['modal_title'] . '</h4>
+						</div>
+						<div class="modal-body">
+							<p>' . $_SESSION['modal_text'] . '</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				<!--alert("Вы ничего пока не заказали.");-->
+				<!--alert(' . $_SESSION['modal_text'] . ');-->
+				$("#Modal").modal("show");
+			</script>';
+unset($_SESSION['modal_title']);
+unset($_SESSION['modal_text']);			
+}
+
+# 3. Initialize Page title	  
+# print '<div align="center"><h1>Меню</h1></div>';
+
+# 4. Show Modal with Notifications
+$sql = "SELECT ShowNotification FROM $table_users WHERE Id = $user_id";
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) {
+	$showNotification = $row["ShowNotification"];
+}
+if ($showNotification == 1) {
 	
-	# 12.2 Add Scrollbar (in case of displaying full menu).
-	if ($filter === '' or $filter === 'custom') {
-		print '<div class="scrollit">';
-	}
+	# 4.1 Disable displaying notification
+	$sql = "UPDATE $table_users SET ShowNotification = 0 WHERE Id = $user_id";
+	$result = $conn->query($sql);
 	
+	# 4.2 Display notification
+	print '	<div class="container">
+				<div class="modal fade" id="ModalNotification" role="dialog">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">Что нового...</h4>
+							</div>
+							<div class="modal-body">
+								<!-- MESSAGE START -->
+								<!-- Update 30.10.2016-->
+								<div><h3><table class="table"><tr class="info"><td align="center">Версия от 30.10.2016</td></tr></tbody></table></h3></div>
+								На странице <a href="menu.php" target="_blank">«Меню»</a> добавлена кнопка «Распечатать заказ»:
+								<div align="center"><a href="menu.php" target="_blank"><img src="img\update20161030_printButton.png"></a></div>
+								<hr>
+								<p>На странице авторизации теперь отображается общее количество заказов:
+								<div align="center"><img src="img\update20161030_loginPage.png"></div>
+								<hr>
+								<!-- MESSAGE END -->
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>';
+}
+
+
+
+$food_table_rows_colours = array('success', 'info', 'warning'); 
+
+
+$sql = "SELECT DISTINCT Date FROM $table_food WHERE DATE >= CURDATE() ORDER BY Date ASC";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0)
+{		
 	print '<table class="food-table table table-hover">
 					<thead></thead>
 					<tbody>';
@@ -558,7 +686,6 @@ if ($result->num_rows > 0)
 	if ($filter === '' or $filter === 'custom') {
 		print '</div>';
 	}
-	
 	print '</div></div>';
 }
 else
@@ -566,7 +693,8 @@ else
 	print '<br><br>Меню пока отсутствует.';
 }
 
-/*
-require_once "footer.php";
-*/
+# require_once "footer.php";
  ?>
+  
+</body>
+</html>
